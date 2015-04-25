@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="four columns offset-by-four center">
+            <h4>Fake Login</h4>
+
+            <form>
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" class="u-full-width" placeholder="user@domain.com"/>
+
+                <label for="password">Password</label>
+                <input id="password" name="password" class="u-full-width" type="password" placeholder="your password"/>
+
+                <label for="remember">
+                    <input type="checkbox" id="remember" name="remember"/>
+                    <span class="label-body">Remember me</span>
+                </label>
+                <input class="button-primary" type="submit" value="Login"/>
+            </form>
+
+            <ul>
+                <li><a href="{{ 'user' | route_url }}">PostgreSQL Test</a></li>
+                <li><a href="{{ 'chat' | route_url }}">Chat Test</a></li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}

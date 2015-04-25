@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+    {% block head %}
+        <title>dashto.net</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="/static/css/normalize.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/css/skeleton.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+        <link rel="shortcut icon" href="{{ request.static_url('dashto:static/images/favicon.png') }}">
+        <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+    {% endblock %}
+</head>
+<body>
+
+<div class="container">
+    <div class="row center">
+        <h1 id="app-title">dashto.net</h1>
+    </div>
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

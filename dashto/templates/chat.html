@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {{ super() }}
+    <script type="text/javascript">
+    $(document).ready(function() {
+        var port = 5001;
+        var conn = new WebSocket('ws://' + document.domain + ':' + port);
+        var message_input = $('#message');
+
+        conn.onclose = function() {
+            var li = $('<li/>', {text: 'Chat server at port ' + port + ' stopped', 'class': 'error'});
+            $('#messages').append(li);
+        };
+
+        conn.onerror = function() {
+            var li = $('<li/>', {text: 'Failed to connect to chat server at port ' + port, 'class': 'error'});
+            $('#messages').append(li);
+        };
+
+        conn.onmessage = function(message) {
+            var li = $('<li/>', {text: message.data});
+            $('#messages').append(li);
+        };
+
+        $('#chat-form').submit(function() {
+            var message = message_input.val();
+            if (message) {
+                conn.send(message);
+            }
+            message_input.val('');
+            message_input.focus();
+            return false;
+        });
+
+        message_input.focus();
+    });
+    </script>
+    <style>
+        #messages { list-style-type: none; margin: 0; padding: 0; }
+        #messages li { padding: 5px 10px; }
+        #messages li:nth-child(odd) { background: #eee; }
+        #messages .error { color: #f00; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="six columns offset-by-three center">
+            <h4>Chat Test</h4>
+            <form id="chat-form">
+                <label for="message">Message</label>
+                <input id="message" name="message" type="text" class="u-full-width"
+                       autocomplete="off" placeholder="your message here..."/>
+                <input class="button-primary" type="submit" value="Send"/>
+            </form>
+            <ul id="messages"></ul>
+        </div>
+    </div>
+{% endblock %}
