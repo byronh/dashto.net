@@ -5,15 +5,15 @@ from pyramid.view import view_config
 from sqlalchemy.exc import DBAPIError
 
 
-class Controller:
+class WebController:
     def __init__(self, request):
         self.request = request
 
-    @view_config(route_name='home', renderer='templates/index.html')
-    def index(self):
+    @view_config(route_name='home', renderer='dashto:templates/index.html')
+    def home(self):
         return {}
 
-    @view_config(route_name='user', renderer='templates/user.html')
+    @view_config(route_name='user', renderer='dashto:templates/user.html')
     def user(self):
         try:
             user = DBSession.query(User).filter(User.name == 'admin').first()
@@ -23,6 +23,6 @@ class Controller:
         except DBAPIError as e:
             return Response('Database error:\n\n{}'.format(e), content_type='text/plain', status_int=500)
 
-    @view_config(route_name='chat', renderer='templates/chat.html')
+    @view_config(route_name='chat', renderer='dashto:templates/chat.html')
     def chat(self):
         return {}

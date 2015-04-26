@@ -3,7 +3,7 @@ import sqlalchemy
 import transaction
 from dashto.db import DBSession, Base
 from dashto.models import User
-from dashto.views import Controller
+from dashto.views import WebController
 from pyramid import testing
 
 
@@ -23,7 +23,7 @@ class TestSuccess(unittest.TestCase):
 
     def test_passing_view(self):
         request = testing.DummyRequest()
-        controller = Controller(request)
+        controller = WebController(request)
         info = controller.user()
         self.assertEqual(info['user'].name, 'admin')
 
@@ -40,6 +40,6 @@ class TestFailure(unittest.TestCase):
 
     def test_failing_view(self):
         request = testing.DummyRequest()
-        controller = Controller(request)
+        controller = WebController(request)
         info = controller.user()
         self.assertEqual(info.status_int, 500)
