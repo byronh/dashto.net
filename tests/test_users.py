@@ -1,8 +1,7 @@
 import unittest
 import sqlalchemy
 import transaction
-from dashto.db import DBSession, Base
-from dashto.models import User
+from dashto.models import Base, DBSession, User
 from dashto.views import WebController
 from pyramid import testing
 

@@ -3,6 +3,7 @@ from setuptools.command.test import test as test_command
 
 
 requires = [
+    'alembic',
     'psycopg2',
     'pyramid',
     'pyramid_jinja2',
@@ -52,6 +53,5 @@ setuptools.setup(
         [paste.app_factory]
         main = dashto:main
         [console_scripts]
-        initialize_dashto_db = dashto.scripts.initializedb:main
         """
 )

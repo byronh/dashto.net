@@ -1,5 +1,4 @@
-from dashto.db import DBSession
-from dashto.models import User
+from dashto.models import DBSession, User
 from pyramid.response import Response
 from pyramid.session import check_csrf_token
 from pyramid.view import view_config
