@@ -1,5 +1,5 @@
 import setuptools
-from setuptools.command.test import test
+from setuptools.command.test import test as test_command
 
 
 requires = [
@@ -17,14 +17,15 @@ requires = [
 ]
 
 
-class PyTest(test):
+class PyTest(test_command):
+    """ Use py.test as the default test runner. """
     def __init__(self, dist, **kw):
         super().__init__(dist, **kw)
         self.test_args = None
         self.test_suite = None
 
     def finalize_options(self):
-        test.finalize_options(self)
+        test_command.finalize_options(self)
         self.test_args = []
         self.test_suite = True
 

@@ -1,6 +1,7 @@
 from dashto.db import DBSession
 from dashto.models import User
 from pyramid.response import Response
+from pyramid.session import check_csrf_token
 from pyramid.view import view_config
 from sqlalchemy.exc import DBAPIError
 
@@ -25,4 +26,9 @@ class WebController:
 
     @view_config(route_name='chat', renderer='dashto:templates/chat.html')
     def chat(self):
+        return {}
+
+    @view_config(route_name='login', renderer='dashto:templates/index.html')
+    def login(self):
+        check_csrf_token(self.request)
         return {}

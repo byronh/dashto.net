@@ -21,6 +21,7 @@ def main(global_config, **settings):
     config.add_route('home', '/')
     config.add_route('user', '/user')
     config.add_route('chat', '/chat')
+    config.add_route('login', '/login')
 
     config.add_route('api', '/api')
 
