@@ -8,6 +8,11 @@
         var conn = new WebSocket('ws://' + document.domain + ':' + port);
         var message_input = $('#message');
 
+        conn.onopen = function() {
+            var li = $('<li/>', {text: 'Connected to chat server at port ' + port, 'class': 'success'});
+            $('#messages').append(li);
+        };
+
         conn.onclose = function() {
             var li = $('<li/>', {text: 'Chat server at port ' + port + ' stopped', 'class': 'error'});
             $('#messages').append(li);
@@ -41,6 +46,7 @@
         #messages li { padding: 5px 10px; }
         #messages li:nth-child(odd) { background: #eee; }
         #messages .error { color: #f00; }
+        #messages .success { color: forestgreen; }
     </style>
 {% endblock %}
 
