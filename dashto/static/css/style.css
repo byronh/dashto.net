@@ -1,7 +1,31 @@
+.center {
+    text-align: center;
+}
+
+.errors ul {
+    color: red;
+    list-style: none;
+}
+
 #app-title {
     margin: 1em;
 }
 
-.center {
-    text-align: center;
+#navigation ul {
+    list-style: none;
+    background-color: #f0f0f0;
+    padding: 1rem;
+}
+
+#navigation ul li {
+    display: inline;
+    margin: 0 2rem;
+}
+
+#navigation a {
+    text-decoration: none;
+}
+
+#navigation a:hover {
+    text-decoration: underline;
 }

@@ -1,15 +1,15 @@
 """
-Initial revision
+0 Initial revision
 
-Current ID: 1fac369d356
+Current ID: 2879aca2220
 Previous ID: None
-Timestamp: 2015-04-26 15:11:44.446117
+Timestamp: 2015-04-26 19:43:20.884634
 """
 from alembic import op
 import sqlalchemy as sa
 
 
-revision = '1fac369d356'
+revision = '2879aca2220'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -20,11 +20,9 @@ def upgrade():
         'users',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('name', sa.Unicode(length=255), nullable=False),
-        sa.Column('email', sa.Unicode(length=255), nullable=False),
         sa.Column('password', sa.Unicode(length=255), nullable=False),
         sa.Column('joined', sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint('id'),
-        sa.UniqueConstraint('email'),
         sa.UniqueConstraint('name')
     )
 

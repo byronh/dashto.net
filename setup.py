@@ -10,9 +10,11 @@ requires = [
     'pyramid_debugtoolbar',
     'pyramid_redis_sessions',
     'pyramid_tm',
+    'pyramid_wtforms',
     'sqlalchemy',
     'transaction',
     'waitress',
+    'webhelpers',
     'websockets',
     'zope.sqlalchemy',
 ]

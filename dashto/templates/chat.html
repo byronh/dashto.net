@@ -51,16 +51,12 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="six columns offset-by-three center">
-            <h4>Chat Test</h4>
-            <form id="chat-form">
-                <label for="message">Message</label>
-                <input id="message" name="message" type="text" class="u-full-width"
-                       autocomplete="off" placeholder="your message here..."/>
-                <input class="button-primary" type="submit" value="Send"/>
-            </form>
-            <ul id="messages"></ul>
-        </div>
-    </div>
+    <h4>Chat Test</h4>
+    <form id="chat-form">
+        <label for="message">Message</label>
+        <input id="message" name="message" type="text" class="u-full-width"
+               autocomplete="off" placeholder="your message here..."/>
+        <input class="button-primary" type="submit" value="Send"/>
+    </form>
+    <ul id="messages"></ul>
 {% endblock %}
