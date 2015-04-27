@@ -4,6 +4,7 @@ from setuptools.command.test import test as test_command
 
 requires = [
     'alembic',
+    'cryptacular',
     'psycopg2',
     'pyramid',
     'pyramid_jinja2',

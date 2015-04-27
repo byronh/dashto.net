@@ -2,6 +2,7 @@ from dashto import forms
 from dashto.models import DBSession, User
 from pyramid import httpexceptions
 from pyramid.view import view_config
+from sqlalchemy import exc as sqlexceptions
 
 
 class BaseController:
@@ -34,10 +35,17 @@ class MainController(BaseController):
         form = forms.UserLoginForm(**self.form_kwargs)
         if self.validate(form):
             user = DBSession.query(User).filter(User.name == form.user_name.data).first()
-            if user:
+            if user and user.validate_password(form.user_password.data):
                 self.request.session['user'] = user
-            return self.redirect('home')
+                return self.redirect('home')
+            else:
+                form.user_name.errors.append('Invalid credentials')
         return {'form': form}
+
+    @view_config(route_name='logout')
+    def logout(self):
+        self.request.session.invalidate()
+        return self.redirect('home')
 
 
 class AdminController(BaseController):
@@ -48,6 +56,10 @@ class AdminController(BaseController):
             user = User()
             user.name = form.user_name.data
             user.password = form.user_password.data
-            DBSession.add(user)
-            return self.redirect('home')
+            try:
+                DBSession.add(user)
+                DBSession.flush()
+                return self.redirect('home')
+            except sqlexceptions.IntegrityError:
+                form.user_name.errors.append('User already exists')
         return {'form': form}
