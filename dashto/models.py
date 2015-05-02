@@ -1,9 +1,10 @@
 import datetime
 from cryptacular.bcrypt import BCRYPTPasswordManager
-from sqlalchemy import Column, DateTime, Integer, Unicode
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, Unicode
+from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import backref, relationship, scoped_session, sessionmaker
 from zope.sqlalchemy import ZopeTransactionExtension
 
 
@@ -13,10 +14,13 @@ Base = declarative_base()
 
 class User(Base):
     __tablename__ = 'users'
+
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(255), unique=True, nullable=False)
     _password = Column('password', Unicode(255), nullable=False)
     joined = Column(DateTime, default=datetime.datetime.utcnow)
+
+    campaigns = association_proxy('user_campaigns', 'campaign')
 
     @hybrid_property
     def password(self):
@@ -30,3 +34,22 @@ class User(Base):
     def validate_password(self, value):
         manager = BCRYPTPasswordManager()
         return manager.check(self._password, value)
+
+
+class Campaign(Base):
+    __tablename__ = 'campaigns'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(Unicode(255), nullable=False)
+
+    users = association_proxy('campaign_users', 'user')
+
+
+class CampaignMembership(Base):
+    __tablename__ = 'campaign_memberships'
+    user_id = Column(Integer, ForeignKey(User.id), primary_key=True)
+    campaign_id = Column(Integer, ForeignKey(Campaign.id), primary_key=True)
+    is_gm = Column(Boolean, nullable=False, default=False)
+
+    user = relationship(User, backref=backref('user_campaigns', cascade='all, delete-orphan'))
+    campaign = relationship(Campaign, backref=backref('campaign_users', cascade='all, delete-orphan'))

@@ -12,12 +12,24 @@ class BaseController:
             formdata=self.request.POST,
             meta={'csrf_context': self.request.session}
         )
+        user_id = self.request.session.get('user_id')
+        if user_id:
+            self._user = DBSession.query(User).filter(User.id == user_id).first()
 
     def redirect(self, route_name):
         return httpexceptions.HTTPFound(location=self.request.route_url(route_name))
 
     def validate(self, form):
-        return self.request.method == 'POST' and form.validate()
+        if self.request.method == 'POST' and form.validate():
+            return True
+        if 'csrf_token' in form.errors:
+            raise httpexceptions.HTTPUnauthorized()
+        return False
+
+    @property
+    def user(self):
+        """ :rtype: User """
+        return self._user
 
 
 class MainController(BaseController):
@@ -36,7 +48,7 @@ class MainController(BaseController):
         if self.validate(form):
             user = DBSession.query(User).filter(User.name == form.user_name.data).first()
             if user and user.validate_password(form.user_password.data):
-                self.request.session['user'] = user
+                self.request.session['user_id'] = user.id
                 return self.redirect('home')
             else:
                 form.user_name.errors.append('Invalid credentials')
