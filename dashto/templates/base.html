@@ -34,8 +34,8 @@
         </div>
         <div class="four columns">
             <h4>Sidebar</h4>
-            {% if request.session.user %}
-                <p>Welcome, {{ request.session.user.name }}!</p>
+            {% if view.user %}
+                <p>Welcome, {{ view.user.name }}!</p>
                 <p><a href="{{ 'logout'|route_url }}">Log out</a></p>
             {% else %}
                 <p>Not logged in.</p>

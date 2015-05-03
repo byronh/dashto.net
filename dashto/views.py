@@ -1,5 +1,5 @@
 from dashto import forms
-from dashto.models import DBSession, User
+from dashto.models import DBSession, Campaign, CampaignMembership, User
 from pyramid import httpexceptions
 from pyramid.view import view_config
 from sqlalchemy import exc as sqlexceptions
@@ -14,7 +14,9 @@ class BaseController:
         )
         user_id = self.request.session.get('user_id')
         if user_id:
-            self._user = DBSession.query(User).filter(User.id == user_id).first()
+            self._user = DBSession.query(User).get(user_id)
+        else:
+            self._user = None
 
     def redirect(self, route_name):
         return httpexceptions.HTTPFound(location=self.request.route_url(route_name))

@@ -20,7 +20,7 @@ class User(Base):
     _password = Column('password', Unicode(255), nullable=False)
     joined = Column(DateTime, default=datetime.datetime.utcnow)
 
-    campaigns = association_proxy('user_campaigns', 'campaign')
+    campaigns = association_proxy('user_campaigns', 'campaign', creator=lambda c: CampaignMembership(campaign=c))
 
     @hybrid_property
     def password(self):
@@ -42,7 +42,7 @@ class Campaign(Base):
     id = Column(Integer, primary_key=True)
     name = Column(Unicode(255), nullable=False)
 
-    users = association_proxy('campaign_users', 'user')
+    users = association_proxy('campaign_users', 'user', creator=lambda u: CampaignMembership(user=u))
 
 
 class CampaignMembership(Base):
@@ -53,3 +53,8 @@ class CampaignMembership(Base):
 
     user = relationship(User, backref=backref('user_campaigns', cascade='all, delete-orphan'))
     campaign = relationship(Campaign, backref=backref('campaign_users', cascade='all, delete-orphan'))
+
+    def __init__(self, user=None, campaign=None, is_gm=False):
+        self.user = user
+        self.campaign = campaign
+        self.is_gm = is_gm
