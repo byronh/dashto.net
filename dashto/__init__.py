@@ -11,9 +11,6 @@ def main(global_config, **settings):
     models.DBSession.configure(bind=engine)
     models.Base.metadata.bind = engine
 
-    # settings['redis.sessions.serialize'] = auth.serialize
-    # settings['redis.sessions.deserialize'] = auth.deserialize
-
     config = Configurator(settings=settings)
 
     config.set_root_factory(auth.RootFactory)

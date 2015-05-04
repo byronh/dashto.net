@@ -1,20 +1,9 @@
+import aioredis
 import asyncio
-import asyncio_redis
-# import pickle
 import json
+import pickle
 import websockets
-# from asyncio_redis.encoders import BaseEncoder, BytesEncoder
 from pyramid.session import signed_deserialize
-
-
-# class PickleEncoder(BaseEncoder):
-#     native_type = str
-#
-#     def encode_from_native(self, data):
-#         return pickle.loads(data.encode('utf-8'))
-#
-#     def decode_to_native(self, data):
-#         return pickle.dumps(data)
 
 
 class ChatServer:
@@ -35,11 +24,7 @@ class ChatServer:
 
     @asyncio.coroutine
     def connect_to_redis(self):
-        self.redis = yield from asyncio_redis.Connection.create(
-            host='localhost',
-            port=6379,
-            # encoder=PickleEncoder()
-        )
+        self.redis = yield from aioredis.create_redis(('localhost', 6379))
 
     @asyncio.coroutine
     def client_handler(self, websocket, path):
@@ -47,11 +32,10 @@ class ChatServer:
 
         while True:
             json_data = yield from websocket.recv()
-            if json_data is None:
+            try:
+                data = json.loads(json_data)
+            except (ValueError, TypeError):
                 break
-            if len(json_data) == 0:
-                continue
-            data = json.loads(json_data)
             yield from self.on_receive(websocket, data)
 
         yield from self.on_disconnect(websocket)
@@ -71,16 +55,19 @@ class ChatServer:
         session_id = data['cookie'].replace('session=', '')
         session_id = signed_deserialize(session_id, 'insecure_secret')
 
-        # session_data = yield from self.redis.get(session_id)
-        # print(session_data)
-        # print(type(session_data))
-        yield from self.broadcast(data['message'])
+        session_data = yield from self.redis.get(session_id)
+        session = pickle.loads(session_data)
+        user_id = session['managed_dict'].get('user_id')
+        if user_id:
+            user = 'User {}'.format(user_id)
+        else:
+            user = 'Anonymous'
+        yield from self.broadcast(user, data['message'])
 
     @asyncio.coroutine
-    def broadcast(self, message):
+    def broadcast(self, user, message):
         for client in self.clients:
-            # user_num = self.clients.index(websocket) + 1
-            yield from client.send('User {}: {}'.format(0, message))
+            yield from client.send('{}: {}'.format(user, message))
 
 if __name__ == '__main__':
     chat_server = ChatServer('0.0.0.0', 5001)
