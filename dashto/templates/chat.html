@@ -31,7 +31,8 @@
         $('#chat-form').submit(function() {
             var message = message_input.val();
             if (message) {
-                conn.send(message);
+                var data = {'cookie': document.cookie, 'message': message};
+                conn.send(JSON.stringify(data));
             }
             message_input.val('');
             message_input.focus();
