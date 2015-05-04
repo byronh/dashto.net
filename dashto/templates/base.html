@@ -34,13 +34,12 @@
         </div>
         <div class="four columns">
             <h4>Sidebar</h4>
-            {% if view.user %}
-                <p>Welcome, {{ view.user.name }}!</p>
+            {% if request.user %}
+                <p>Welcome, {{ request.user.name }}!</p>
                 <p><a href="{{ 'logout'|route_url }}">Log out</a></p>
             {% else %}
                 <p>Not logged in.</p>
             {% endif %}
-            {#<p>{{ request.session.session_id }}</p>#}
         </div>
     </div>
     <div class="row center" id="footer">
