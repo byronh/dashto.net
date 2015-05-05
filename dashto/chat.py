@@ -2,12 +2,14 @@ import aioredis
 import asyncio
 import json
 import pickle
+import signal
 import websockets
 from pyramid.session import signed_deserialize
 
 
 class ChatServer:
     def __init__(self, listen_host, listen_port, redis_host, redis_port, session_secret):
+        self.loop = asyncio.get_event_loop()
         self.host = listen_host
         self.port = listen_port
         self.redis_settings = (redis_host, redis_port)
@@ -17,12 +19,20 @@ class ChatServer:
 
     def start(self):
         start_server = websockets.serve(self.client_handler, self.host, self.port)
-        print('Chat server listening on {}:{}...'.format(self.host, self.port))
 
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.connect_to_redis())
-        loop.run_until_complete(start_server)
-        loop.run_forever()
+        self.loop.add_signal_handler(signal.SIGINT, asyncio.async, self.on_kill())
+        self.loop.add_signal_handler(signal.SIGTERM, asyncio.async, self.on_kill())
+
+        self.loop.run_until_complete(self.connect_to_redis())
+        self.loop.run_until_complete(start_server)
+
+        print('Chat server listening on {}:{}...'.format(self.host, self.port))
+        self.loop.run_forever()
+
+    @asyncio.coroutine
+    def on_kill(self):
+        print('Chat server shutting down...')
+        self.loop.stop()
 
     @asyncio.coroutine
     def connect_to_redis(self):
