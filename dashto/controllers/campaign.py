@@ -1,4 +1,5 @@
 from dashto import forms
+from dashto.auth.permissions import Permissions
 from dashto.controllers.base import BaseController
 from dashto.models import DBSession
 from dashto.models import Campaign
@@ -11,7 +12,7 @@ class CampaignController(BaseController):
     def chat(self):
         return {}
 
-    @view_config(route_name='campaign', match_param='action=new', renderer='campaign/new.html', permission='create')
+    @view_config(route_name='campaign', match_param='action=new', renderer='campaign/new.html', permission=Permissions.CREATE)
     def campaign_create(self):
         form = forms.CampaignCreateForm(**self.form_kwargs)
         if self.validate(form):

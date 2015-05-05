@@ -1,5 +1,7 @@
 import datetime
 from cryptacular.bcrypt import BCRYPTPasswordManager
+from dashto.auth.permissions import Permissions
+from pyramid.security import Allow, Authenticated
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, Unicode, UnicodeText
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.declarative import declarative_base
@@ -22,6 +24,14 @@ class User(Base):
 
     campaigns = association_proxy('user_campaigns', 'campaign', creator=lambda c: CampaignMembership(campaign=c))
     characters = association_proxy('user_characters', 'character')
+
+    # def __init__(self):
+    #     self.__name__ = self.id
+
+    @property
+    def __acl__(self):
+        return [(Allow, Authenticated, Permissions.VIEW),
+                (Allow, 'u:{}'.format(self.id), Permissions.EDIT)]
 
     @hybrid_property
     def password(self):

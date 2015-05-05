@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h4>Create User</h4>
+    <h4>Login</h4>
 
-    <form action="{{ 'user'|route_url(action='new') }}" method="post" enctype="multipart/form-data">
+    <form action="{{ 'login'|route_url }}" method="post" enctype="multipart/form-data">
         {{ form.csrf_token }}
         {{ macros.render_field(form.user_name, class='u-full-width', placeholder='username') }}
         {{ macros.render_field(form.user_password, class='u-full-width', placeholder='password') }}
-        <input class="button-primary" type="submit" value="Create User"/>
+        <input class="button-primary" type="submit" value="Login"/>
     </form>
 {% endblock %}

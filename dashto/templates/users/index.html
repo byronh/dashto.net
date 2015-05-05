@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h4>Users</h4>
+    <ul>
+        {% for user in users %}
+            <li><a href="{{ request.resource_url(user, 'users_view') }}">{{ user.name }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
