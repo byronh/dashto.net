@@ -30,6 +30,7 @@ def main(global_config, **settings):
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
 
+    config.add_route('campaign', '/campaign/{action}')
     config.add_route('user', '/user/{action}')
     config.add_route('chat', '/chat')
 

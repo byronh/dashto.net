@@ -41,7 +41,7 @@ class Campaign(Base):
     __tablename__ = 'campaigns'
 
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode(255), nullable=False)
+    name = Column(Unicode(64), nullable=False)
 
     users = association_proxy('campaign_users', 'user', creator=lambda u: CampaignMembership(user=u))
 
