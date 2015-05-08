@@ -25,9 +25,6 @@ class User(Base):
     campaigns = association_proxy('user_campaigns', 'campaign', creator=lambda c: CampaignMembership(campaign=c))
     characters = association_proxy('user_characters', 'character')
 
-    # def __init__(self):
-    #     self.__name__ = self.id
-
     @property
     def __acl__(self):
         return [(Allow, Authenticated, Permissions.VIEW),

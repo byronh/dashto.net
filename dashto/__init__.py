@@ -36,8 +36,8 @@ def main(global_config, **settings):
 
     config.add_route('users_index', '/u', traverse='/users')
     config.add_route('users_create', '/u/new', traverse='/users')
-    config.add_route('users_view', '/u/{user_id}', traverse='/users/{user_id}')
-    config.add_route('users_edit', '/u/{user_id}/edit', traverse='/users/{user_id}')
+    config.add_route('users_view', '/u/{user_id:\d+}', traverse='/users/{user_id}')
+    config.add_route('users_edit', '/u/{user_id:\d+}/edit', traverse='/users/{user_id}')
 
     config.scan()
     return config.make_wsgi_app()
