@@ -8,9 +8,10 @@ from pyramid.view import view_config
 
 class CampaignController(BaseController):
 
-    @view_config(route_name='chat', renderer='chat.html')
+    @view_config(route_name='chat', renderer='chat.html', permission=Permissions.PUBLIC)
     def chat(self):
-        return {}
+        form = forms.ChatForm(**self.form_kwargs)
+        return {'form': form}
 
     @view_config(route_name='campaign', match_param='action=new', renderer='campaign/new.html', permission=Permissions.CREATE)
     def campaign_create(self):

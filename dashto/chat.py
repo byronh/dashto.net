@@ -7,6 +7,42 @@ import websockets
 from pyramid.session import signed_deserialize
 
 
+class DisconnectError(Exception):
+    pass
+
+
+class NotAuthorizedError(DisconnectError):
+    pass
+
+
+class Client(websockets.WebSocketServerProtocol):
+    def __init__(self, ws_handler, *, origins=None, subprotocols=None, **kwds):
+        super().__init__(ws_handler, origins=origins, subprotocols=subprotocols, **kwds)
+        self.user = None
+        self.redis = None
+        self.session = None
+
+    def authenticate(self, cookie, csrf_token, session_secret):
+        session_id = cookie.replace('session=', '')
+        try:
+            session_id = signed_deserialize(session_id, session_secret)
+        except ValueError:
+            raise NotAuthorizedError('Invalid session token')
+
+        session_data = yield from self.redis.get(session_id)
+        session = pickle.loads(session_data)['managed_dict']
+
+        if '_csrft_' not in session or session['_csrft_'] != csrf_token:
+            raise NotAuthorizedError('Invalid CSRF token')
+
+        user_id = session.get('user_id')
+        if user_id:
+            self.user = 'User {}'.format(user_id)
+        else:
+            self.user = 'Anonymous'
+        self.session = session
+
+
 class ChatServer:
     def __init__(self, listen_host, listen_port, redis_host, redis_port, session_secret):
         self.loop = asyncio.get_event_loop()
@@ -18,7 +54,7 @@ class ChatServer:
         self.redis = None
 
     def start(self):
-        start_server = websockets.serve(self.client_handler, self.host, self.port)
+        start_server = websockets.serve(self.client_handler, self.host, self.port, klass=Client)
 
         self.loop.add_signal_handler(signal.SIGINT, asyncio.async, self.on_kill())
         self.loop.add_signal_handler(signal.SIGTERM, asyncio.async, self.on_kill())
@@ -39,44 +75,49 @@ class ChatServer:
         self.redis = yield from aioredis.create_redis(self.redis_settings)
 
     @asyncio.coroutine
-    def client_handler(self, websocket, path):
-        yield from self.on_connect(websocket, path)
-
-        while True:
-            json_data = yield from websocket.recv()
-            try:
-                data = json.loads(json_data)
-            except (ValueError, TypeError):
-                break
-            yield from self.on_receive(websocket, data)
-
-        yield from self.on_disconnect(websocket)
+    def client_handler(self, client, path):
+        client.redis = self.redis
+        try:
+            yield from self.on_connect(client, path)
+            while True:
+                data = yield from self.receive(client)
+                yield from self.broadcast(client.user, data['message'])
+        except DisconnectError as e:
+            print('Disconnecting {}: {}'.format(client.user, e))
+        yield from self.on_disconnect(client)
 
     @asyncio.coroutine
-    def on_connect(self, websocket, path):
-        print('Client connected to {}'.format(path))
-        self.clients.append(websocket)
+    def on_connect(self, client, path):
+        """ :type client: Client """
+        data = yield from self.receive(client)
+        if 'cookie' not in data:
+            raise NotAuthorizedError('Missing session cookie')
+        if 'csrf_token' not in data:
+            raise NotAuthorizedError('Missing CSRF token')
+        yield from client.authenticate(data['cookie'], data['csrf_token'], self.session_secret)
+        print('{} signed in to {}'.format(client.user, path))
+        self.clients.append(client)
 
     @asyncio.coroutine
-    def on_disconnect(self, websocket):
-        print('Client disconnected')
-        self.clients.remove(websocket)
+    def on_disconnect(self, client):
+        """ :type client: Client """
+        self.clients.remove(client)
 
     @asyncio.coroutine
-    def on_receive(self, websocket, data):
-        session_id = data['cookie'].replace('session=', '')
-        session_id = signed_deserialize(session_id, self.session_secret)
-
-        session_data = yield from self.redis.get(session_id)
-        session = pickle.loads(session_data)
-        user_id = session['managed_dict'].get('user_id')
-        if user_id:
-            user = 'User {}'.format(user_id)
-        else:
-            user = 'Anonymous'
-        yield from self.broadcast(user, data['message'])
+    def receive(self, client):
+        """ :type client: Client """
+        json_data = yield from client.recv()
+        if json_data is None:
+            raise DisconnectError()
+        print('Received {}'.format(json_data))
+        try:
+            data = json.loads(json_data)
+        except (ValueError, TypeError):
+            return {}
+        return data
 
     @asyncio.coroutine
     def broadcast(self, user, message):
+        print('Broadcasting {}, {}'.format(user, message))
         for client in self.clients:
             yield from client.send('{}: {}'.format(user, message))

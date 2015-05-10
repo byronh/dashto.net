@@ -7,6 +7,10 @@ class CampaignCreateForm(SecureForm):
     campaign_name = StringField('Name', [validators.Length(min=3, max=Campaign.name.property.columns[0].type.length)])
 
 
+class ChatForm(SecureForm):
+    pass
+
+
 class UserCreateForm(SecureForm):
     user_name = StringField('Username', [validators.Length(min=3, max=24)])
     user_password = PasswordField('Password', [validators.Length(min=6, max=255)])

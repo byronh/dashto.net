@@ -32,7 +32,7 @@ def main(global_config, **settings):
     config.add_route('logout', '/logout', traverse='/')
 
     config.add_route('campaign', '/campaign/{action}')
-    config.add_route('chat', '/chat')
+    config.add_route('chat', '/chat', traverse='/')
 
     config.add_route('users_index', '/u', traverse='/users')
     config.add_route('users_create', '/u/new', traverse='/users')

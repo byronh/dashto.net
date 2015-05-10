@@ -9,6 +9,9 @@
         var message_input = $('#message');
 
         conn.onopen = function() {
+            var data = {'cookie': document.cookie, 'csrf_token': $('#csrf_token').val()};
+            conn.send(JSON.stringify(data));
+
             var li = $('<li/>', {text: 'Connected to chat server at port ' + port, 'class': 'success'});
             $('#messages').append(li);
         };
@@ -31,7 +34,7 @@
         $('#chat-form').submit(function() {
             var message = message_input.val();
             if (message) {
-                var data = {'cookie': document.cookie, 'message': message};
+                var data = {'message': message};
                 conn.send(JSON.stringify(data));
             }
             message_input.val('');
@@ -54,6 +57,7 @@
 {% block content %}
     <h4>Chat Test</h4>
     <form id="chat-form">
+        {{ form.csrf_token }}
         <label for="message">Message</label>
         <input id="message" name="message" type="text" class="u-full-width"
                autocomplete="off" placeholder="your message here..."/>
