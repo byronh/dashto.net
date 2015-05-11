@@ -52,6 +52,8 @@ class ChatServer:
         self.session_secret = session_secret
         self.clients = []
         self.redis = None
+        self.pub = None
+        self.sub = None
 
     def start(self):
         start_server = websockets.serve(self.client_handler, self.host, self.port, klass=Client)
@@ -61,6 +63,7 @@ class ChatServer:
 
         self.loop.run_until_complete(self.connect_to_redis())
         self.loop.run_until_complete(start_server)
+        self.loop.run_until_complete(self.publish_handler())
 
         print('Chat server listening on {}:{}...'.format(self.host, self.port))
         self.loop.run_forever()
@@ -73,6 +76,8 @@ class ChatServer:
     @asyncio.coroutine
     def connect_to_redis(self):
         self.redis = yield from aioredis.create_redis(self.redis_settings)
+        self.pub = yield from aioredis.create_connection(self.redis_settings)
+        self.sub = yield from aioredis.create_connection(self.redis_settings)
 
     @asyncio.coroutine
     def client_handler(self, client, path):
@@ -81,10 +86,19 @@ class ChatServer:
             yield from self.on_connect(client, path)
             while True:
                 data = yield from self.receive(client)
+                yield from self.pub.execute('publish', 'chan:1', 'Hello!')
                 yield from self.broadcast(client.user, data['message'])
         except DisconnectError as e:
             print('Disconnecting {}: {}'.format(client.user, e))
         yield from self.on_disconnect(client)
+
+    @asyncio.coroutine
+    def publish_handler(self):
+        res = yield from self.sub.execute('subscribe', 'chan:1')
+        print(res)
+        while True:
+            message = yield from self.sub.pubsub_channels['chan:1'].get()
+            print('subbed: {}'.format(message))
 
     @asyncio.coroutine
     def on_connect(self, client, path):

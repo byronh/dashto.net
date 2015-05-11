@@ -3,8 +3,8 @@ from setuptools.command.test import test as test_command
 
 
 requires = [
+    'aioredis==0.1.5',
     'alembic',
-    'aioredis',
     'cryptacular',
     'psycopg2',
     'pyramid',
@@ -53,6 +53,7 @@ setuptools.setup(
     tests_require=['pytest'],
     cmdclass={'test': PyTest},
     install_requires=requires,
+    dependency_links=['http://github.com/aio-libs/aioredis/tarball/master#egg=aioredis-0.1.5'],
     entry_points="""
         [paste.app_factory]
         main = dashto:main
