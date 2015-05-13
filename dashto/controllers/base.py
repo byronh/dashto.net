@@ -21,6 +21,11 @@ class BaseController:
         return False
 
     @property
+    def params(self):
+        """ :rtype: dict """
+        return self.request.matchdict
+
+    @property
     def redis(self):
         """ :rtype: StrictRedis """
         return self.request.session.redis

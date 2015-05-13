@@ -1,5 +1,5 @@
 from dashto import forms
-from dashto.auth.permissions import Permissions
+from dashto.auth import Permissions
 from dashto.controllers.base import BaseController
 from dashto.models import DBSession, User
 from pyramid.view import view_config
@@ -9,8 +9,7 @@ class MainController(BaseController):
 
     @view_config(route_name='home', permission=Permissions.PUBLIC, renderer='index.html')
     def home(self):
-        form = forms.UserLoginForm(**self.form_kwargs)
-        return {'form': form}
+        return {}
 
     @view_config(route_name='login', permission=Permissions.PUBLIC, renderer='login.html')
     def login(self):

@@ -1,5 +1,4 @@
 from dashto import forms
-from dashto.auth.permissions import Permissions
 from dashto.controllers.base import BaseController
 from dashto.models import DBSession, User
 from pyramid.view import view_config
@@ -8,31 +7,29 @@ from sqlalchemy import exc as sqlexceptions
 
 class UsersController(BaseController):
 
-    @view_config(route_name='users_index', permission=Permissions.VIEW, renderer='users/index.html')
+    @view_config(route_name='users_index', renderer='users/index.html')
     def view_all(self):
         users = DBSession.query(User).all()
-        return {
-            'users': users
-        }
+        return {'users': users}
 
-    @view_config(route_name='users_view', permission=Permissions.VIEW, renderer='simple.html')
-    def user_view(self):
-        user = self.request.context
+    @view_config(route_name='users_view', renderer='simple.html')
+    def view(self):
+        user = DBSession.query(User).get(self.params['user_id'])
         return {
             'title': 'View user {}'.format(user.id),
             'body': user.name
         }
 
-    @view_config(route_name='users_edit', permission=Permissions.EDIT, renderer='simple.html')
-    def user_edit(self):
-        user = self.request.context
+    @view_config(route_name='users_edit', renderer='simple.html')
+    def edit(self):
+        user = DBSession.query(User).get(self.params['user_id'])
         return {
             'title': 'Edit user {}'.format(user.id),
             'body': user.name
         }
 
-    @view_config(route_name='users_create', permission=Permissions.PUBLIC, renderer='users/new.html')
-    def user_create(self):
+    @view_config(route_name='users_create', renderer='users/new.html')
+    def create(self):
         form = forms.UserCreateForm(**self.form_kwargs)
         if self.validate(form):
             user = User()

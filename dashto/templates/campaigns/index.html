@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h4>Campaigns</h4>
+    <ul>
+        {% for campaign in campaigns %}
+            <li><a href="{{ 'campaigns_view'|route_url(campaign_id=campaign.id) }}">{{ campaign.name }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
