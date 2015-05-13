@@ -25,11 +25,12 @@ class ChatServer:
         self.loop.add_signal_handler(signal.SIGINT, asyncio.async, self.on_kill())
         self.loop.add_signal_handler(signal.SIGTERM, asyncio.async, self.on_kill())
 
+        print('Chat server listening on {}:{}...'.format(self.host, self.port))
+
         self.loop.run_until_complete(self.connect_to_redis())
         self.loop.run_until_complete(start_server)
         self.loop.run_until_complete(self.publish_handler())
 
-        print('Chat server listening on {}:{}...'.format(self.host, self.port))
         self.loop.run_forever()
 
     @asyncio.coroutine
@@ -59,10 +60,12 @@ class ChatServer:
     @asyncio.coroutine
     def publish_handler(self):
         res = yield from self.sub.execute('subscribe', 'chan:1')
-        print(res)
+        if res[2] != 1:
+            raise errors.FatalServerError('Failed to subscribe to channel')
+        print('Subscribed to channel: {}'.format('chan:1'))
         while True:
             message = yield from self.sub.pubsub_channels['chan:1'].get()
-            print('subbed: {}'.format(message))
+            print('Received message from subscribed channel: {}'.format(message))
 
     @asyncio.coroutine
     def on_connect(self, client, path):
@@ -86,7 +89,7 @@ class ChatServer:
         """ :type client: dashto.chat.client.Client """
         json_data = yield from client.recv()
         if json_data is None:
-            raise errors.DisconnectError()
+            raise errors.DisconnectError('Client closed connection')
         print('Received {}'.format(json_data))
         try:
             data = json.loads(json_data)
@@ -96,6 +99,7 @@ class ChatServer:
 
     @asyncio.coroutine
     def broadcast(self, user, message):
+        # TODO send JSON to client
         print('Broadcasting {}, {}'.format(user, message))
         for client in self.clients:
             yield from client.send('{}: {}'.format(user, message))
