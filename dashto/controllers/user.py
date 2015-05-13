@@ -38,7 +38,7 @@ class UsersController(BaseController):
             try:
                 DBSession.add(user)
                 DBSession.flush()
-                return self.redirect('home')
+                return self.redirect('users_index')
             except sqlexceptions.IntegrityError:
                 form.user_name.errors.append('User already exists')
         return {'form': form}

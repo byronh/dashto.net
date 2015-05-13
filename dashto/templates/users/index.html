@@ -2,6 +2,7 @@
 
 {% block content %}
     <h4>Users</h4>
+    <p><a href="{{ 'users_create'|route_url }}">Create new user</a></p>
     <ul>
         {% for user in users %}
             <li><a href="{{ 'users_view'|route_url(user_id=user.id) }}">{{ user.name }}</a></li>

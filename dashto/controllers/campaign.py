@@ -26,12 +26,12 @@ class CampaignsController(BaseController):
         form = forms.ChatForm(**self.form_kwargs)
         return {'form': form}
 
-    @view_config(route_name='campaigns_create', match_param='action=new', renderer='campaigns/new.html')
-    def campaign_create(self):
+    @view_config(route_name='campaigns_create', renderer='campaigns/new.html')
+    def create(self):
         form = forms.CampaignCreateForm(**self.form_kwargs)
         if self.validate(form):
             campaign = Campaign()
             campaign.name = form.campaign_name.data
             DBSession.add(campaign)
-            return self.redirect('home')
+            return self.redirect('campaigns_index')
         return {'form': form}
