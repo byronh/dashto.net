@@ -1,7 +1,7 @@
 from dashto import forms
 from dashto.controllers.base import BaseController
 from dashto.models import DBSession
-from dashto.models import Campaign
+from dashto.models import Campaign, CampaignMembership
 from pyramid import httpexceptions
 from pyramid.view import view_config
 
@@ -40,6 +40,13 @@ class CampaignsController(BaseController):
         if self.validate(form):
             campaign = Campaign()
             campaign.name = form.campaign_name.data
+
+            membership = CampaignMembership()
+            membership.user = self.user
+            membership.campaign = campaign
+            membership.is_gm = True
+
             DBSession.add(campaign)
+            DBSession.add(membership)
             return self.redirect('campaigns_index')
         return {'form': form}
