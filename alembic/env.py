@@ -1,15 +1,3 @@
-"""
-Usage (in project root):
-
-Generate a migration updates the real database to match the schema defined in models.py:
-    alembic -c development.ini revision --autogenerate -m "message goes here"
-
-Alter the database to match the latest schema:
-    alembic -c development.ini upgrade head
-
-Roll back the latest upgrade:
-    alembic -c development.ini downgrade -1
-"""
 from alembic import context
 from dashto.models import Base
 from logging.config import fileConfig
