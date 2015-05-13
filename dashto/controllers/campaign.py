@@ -1,12 +1,19 @@
 from dashto import forms
-from dashto.auth import Permissions
 from dashto.controllers.base import BaseController
 from dashto.models import DBSession
 from dashto.models import Campaign
+from pyramid import httpexceptions
 from pyramid.view import view_config
 
 
 class CampaignsController(BaseController):
+
+    def get_campaign(self):
+        """ :rtype: Campaign """
+        campaign = DBSession.query(Campaign).get(self.params['campaign_id'])
+        if not campaign:
+            raise httpexceptions.HTTPNotFound()
+        return campaign
 
     @view_config(route_name='campaigns_index', renderer='campaigns/index.html')
     def view_all(self):
@@ -15,16 +22,17 @@ class CampaignsController(BaseController):
 
     @view_config(route_name='campaigns_view', renderer='simple.html')
     def view(self):
-        campaign = DBSession.query(Campaign).get(self.params['campaign_id'])
+        campaign = self.get_campaign()
         return {
             'title': 'View campaign {}'.format(campaign.id),
             'body': campaign.name
         }
 
-    @view_config(route_name='chat', renderer='chat.html', permission=Permissions.PUBLIC)
-    def chat(self):
+    @view_config(route_name='campaigns_play', renderer='campaigns/play.html')
+    def play(self):
+        campaign = self.get_campaign()
         form = forms.ChatForm(**self.form_kwargs)
-        return {'form': form}
+        return {'campaign': campaign, 'form': form}
 
     @view_config(route_name='campaigns_create', renderer='campaigns/new.html')
     def create(self):

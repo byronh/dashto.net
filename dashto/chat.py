@@ -32,7 +32,7 @@ class Client(websockets.WebSocketServerProtocol):
         session_data = yield from self.redis.get(session_id)
         session = pickle.loads(session_data)['managed_dict']
 
-        if '_csrft_' not in session or session['_csrft_'] != csrf_token:
+        if session['_csrft_'] != csrf_token:
             raise NotAuthorizedError('Invalid CSRF token')
 
         user_id = session.get('user_id')

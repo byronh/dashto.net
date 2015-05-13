@@ -5,7 +5,11 @@
     <p><a href="{{ 'campaigns_create'|route_url }}">Create new campaign</a></p>
     <ul>
         {% for campaign in campaigns %}
-            <li><a href="{{ 'campaigns_view'|route_url(campaign_id=campaign.id) }}">{{ campaign.name }}</a></li>
+            <li>
+                <a href="{{ 'campaigns_view'|route_url(campaign_id=campaign.id) }}">{{ campaign.name }}</a>
+                -
+                <a href="{{ 'campaigns_play'|route_url(campaign_id=campaign.id) }}">Play</a>
+            </li>
         {% endfor %}
     </ul>
 {% endblock %}

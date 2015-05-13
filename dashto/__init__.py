@@ -33,7 +33,7 @@ def main(global_config, **settings):
     config.add_route('campaigns_index', '/c')
     config.add_route('campaigns_create', '/c/new')
     config.add_route('campaigns_view', '/c/{campaign_id:\d+}')
-    config.add_route('chat', '/chat')
+    config.add_route('campaigns_play', '/c/{campaign_id:\d+}/play')
 
     config.add_route('users_index', '/u')
     config.add_route('users_create', '/u/new')
