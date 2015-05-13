@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import argparse
+from dashto.chat.server import ChatServer
 from pyramid.paster import bootstrap
-from dashto.chat import ChatServer
 
 
 if __name__ == '__main__':
