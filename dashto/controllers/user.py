@@ -1,4 +1,5 @@
 from dashto import forms
+from dashto.auth import Permissions
 from dashto.controllers.base import BaseController
 from dashto.models import DBSession, User
 from pyramid.view import view_config
@@ -28,7 +29,7 @@ class UsersController(BaseController):
             'body': user.name
         }
 
-    @view_config(route_name='users_create', renderer='users/new.html')
+    @view_config(route_name='users_create', renderer='users/new.html', permission=Permissions.ADMIN)
     def create(self):
         form = forms.UserCreateForm(**self.form_kwargs)
         if self.validate(form):

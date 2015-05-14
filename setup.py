@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import setuptools
 from setuptools.command.test import test as test_command
 

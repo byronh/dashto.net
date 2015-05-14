@@ -29,6 +29,13 @@ Roll back the latest upgrade:
 alembic -c [development/production].ini downgrade -1
 ```
 
+### Creating a user
+
+Create the first user so you can log in to the app:
+```
+python create_user.py -c [development/production].ini
+```
+
 ### Running the web server
 ```
 pserve [--reload] [development/production].ini
