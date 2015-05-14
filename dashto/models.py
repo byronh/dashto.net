@@ -66,7 +66,7 @@ class Character(Base):
     __tablename__ = 'characters'
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey(User.id))
+    user_id = Column(Integer, ForeignKey(User.id), nullable=False)
     name = Column(UnicodeText, nullable=False)
     full_name = Column(UnicodeText)
     portrait = Column(UnicodeText)
