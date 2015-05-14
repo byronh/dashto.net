@@ -4,7 +4,7 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, UnicodeTe
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import backref, relationship, scoped_session, sessionmaker
+from sqlalchemy.orm import backref, deferred, relationship, scoped_session, sessionmaker
 from zope.sqlalchemy import ZopeTransactionExtension
 
 
@@ -17,10 +17,10 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(UnicodeText, unique=True, nullable=False)
-    _password = Column('password', UnicodeText, nullable=False)
-    joined = Column(DateTime, default=datetime.datetime.utcnow)
+    _password = deferred(Column('password', UnicodeText, nullable=False))
+    joined = deferred(Column(DateTime, default=datetime.datetime.utcnow))
 
-    campaigns = association_proxy('user_campaigns', 'campaign', creator=lambda c: CampaignMembership(campaign=c))
+    campaigns = association_proxy('user_campaigns', 'campaign', creator=lambda c: Membership(campaign=c))
     characters = association_proxy('user_characters', 'character')
 
     @hybrid_property
@@ -43,11 +43,11 @@ class Campaign(Base):
     id = Column(Integer, primary_key=True)
     name = Column(UnicodeText, nullable=False)
 
-    users = association_proxy('campaign_users', 'user', creator=lambda u: CampaignMembership(user=u))
+    users = association_proxy('campaign_users', 'user', creator=lambda u: Membership(user=u))
 
 
-class CampaignMembership(Base):
-    __tablename__ = 'campaign_memberships'
+class Membership(Base):
+    __tablename__ = 'memberships'
 
     user_id = Column(Integer, ForeignKey(User.id), primary_key=True)
     campaign_id = Column(Integer, ForeignKey(Campaign.id), primary_key=True)
@@ -70,6 +70,6 @@ class Character(Base):
     name = Column(UnicodeText, nullable=False)
     full_name = Column(UnicodeText)
     portrait = Column(UnicodeText)
-    biography = Column(UnicodeText)
+    biography = deferred(Column(UnicodeText))
 
     user = relationship(User, backref=backref('user_characters'))

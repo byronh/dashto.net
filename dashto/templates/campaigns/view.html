@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h4>Campaign: {{ campaign.name }}</h4>
+
+    <p>Members:</p>
+    <ul>
+        {% for membership in memberships %}
+        <li>
+            <a href="{{ 'users_view'|route_url(user_id=membership.user_id) }}">{{ membership.user.name }}</a>
+            {% if membership.is_gm %}(GM){% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

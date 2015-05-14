@@ -1,9 +1,10 @@
 from dashto import forms
 from dashto.controllers.base import BaseController
 from dashto.models import DBSession
-from dashto.models import Campaign, CampaignMembership
+from dashto.models import Campaign, Membership, User
 from pyramid import httpexceptions
 from pyramid.view import view_config
+from sqlalchemy.orm import contains_eager
 
 
 class CampaignsController(BaseController):
@@ -20,13 +21,12 @@ class CampaignsController(BaseController):
         campaigns = DBSession.query(Campaign).all()
         return {'campaigns': campaigns}
 
-    @view_config(route_name='campaigns_view', renderer='simple.html')
+    @view_config(route_name='campaigns_view', renderer='campaigns/view.html')
     def view(self):
         campaign = self.get_campaign()
-        return {
-            'title': 'View campaign {}'.format(campaign.id),
-            'body': campaign.name
-        }
+        memberships = DBSession.query(Membership).join(User).filter(Membership.campaign == campaign)\
+            .options(contains_eager(Membership.user)).all()
+        return {'campaign': campaign, 'memberships': memberships}
 
     @view_config(route_name='campaigns_play', renderer='campaigns/play.html')
     def play(self):
@@ -41,7 +41,7 @@ class CampaignsController(BaseController):
             campaign = Campaign()
             campaign.name = form.campaign_name.data
 
-            membership = CampaignMembership()
+            membership = Membership()
             membership.user = self.user
             membership.campaign = campaign
             membership.is_gm = True
