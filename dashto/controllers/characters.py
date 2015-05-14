@@ -42,6 +42,7 @@ class CharactersController(BaseController):
         if self.validate(form):
             character = Character()
             character.name = form.character_name.data
+            character.user = self.user
             DBSession.add(character)
             return self.redirect('characters_index')
         return {'form': form}
