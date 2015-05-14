@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h4>Characters</h4>
+    <p><a href="{{ 'characters_create'|route_url }}">Create new character</a></p>
+    <ul>
+        {% for character in characters %}
+            <li>
+                <a href="{{ 'characters_view'|route_url(character_id=character.id) }}">{{ character.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

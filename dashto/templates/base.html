@@ -26,6 +26,7 @@
             <li><a href="{{ 'home'|route_url }}">Home</a></li>
             {% if request.user %}
                 <li><a href="{{ 'campaigns_index'|route_url }}">Campaigns</a></li>
+                <li><a href="{{ 'characters_index'|route_url }}">Characters</a></li>
                 <li><a href="{{ 'users_index'|route_url }}">Users</a></li>
             {% else %}
                 <li><a href="{{ 'login'|route_url }}">Login</a></li>

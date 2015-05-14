@@ -30,15 +30,19 @@ def main(global_config, **settings):
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
 
-    config.add_route('campaigns_index', '/c')
-    config.add_route('campaigns_create', '/c/new')
-    config.add_route('campaigns_view', '/c/{campaign_id:\d+}')
-    config.add_route('campaigns_play', '/c/{campaign_id:\d+}/play')
+    config.add_route('campaigns_index', '/campaigns')
+    config.add_route('campaigns_create', '/campaigns/new')
+    config.add_route('campaigns_view', '/campaigns/{campaign_id:\d+}')
+    config.add_route('campaigns_play', '/campaigns/{campaign_id:\d+}/play')
+    
+    config.add_route('characters_index', '/characters')
+    config.add_route('characters_create', '/characters/new')
+    config.add_route('characters_view', '/characters/{character_id:\d+}')
 
-    config.add_route('users_index', '/u')
-    config.add_route('users_create', '/u/new')
-    config.add_route('users_view', '/u/{user_id:\d+}')
-    config.add_route('users_edit', '/u/{user_id:\d+}/edit')
+    config.add_route('users_index', '/users')
+    config.add_route('users_create', '/users/new')
+    config.add_route('users_view', '/users/{user_id:\d+}')
+    config.add_route('users_edit', '/users/{user_id:\d+}/edit')
 
     config.scan()
     return config.make_wsgi_app()
