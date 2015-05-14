@@ -18,14 +18,14 @@ class CampaignsController(BaseController):
 
     @view_config(route_name='campaigns_index', renderer='campaigns/index.html')
     def view_all(self):
-        campaigns = DBSession.query(Campaign).all()
+        campaigns = DBSession.query(Campaign).order_by(Campaign.name).all()
         return {'campaigns': campaigns}
 
     @view_config(route_name='campaigns_view', renderer='campaigns/view.html')
     def view(self):
         campaign = self.get_campaign()
         memberships = DBSession.query(Membership).join(User).filter(Membership.campaign == campaign)\
-            .options(contains_eager(Membership.user)).all()
+            .options(contains_eager(Membership.user)).order_by(Membership.is_gm.desc(), User.name).all()
         return {'campaign': campaign, 'memberships': memberships}
 
     @view_config(route_name='campaigns_play', renderer='campaigns/play.html')
