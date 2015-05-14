@@ -10,8 +10,8 @@ class BaseController:
             meta={'csrf_context': self.request.session}
         )
 
-    def redirect(self, route_name):
-        return httpexceptions.HTTPFound(location=self.request.route_url(route_name))
+    def redirect(self, route_name, **kwargs):
+        return httpexceptions.HTTPFound(location=self.request.route_url(route_name, **kwargs))
 
     def validate(self, form):
         if self.request.method == 'POST' and form.validate():

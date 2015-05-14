@@ -38,6 +38,7 @@ def main(global_config, **settings):
     config.add_route('characters_index', '/characters')
     config.add_route('characters_create', '/characters/new')
     config.add_route('characters_view', '/characters/{character_id:\d+}')
+    config.add_route('characters_edit', '/characters/{character_id:\d+}/edit')
 
     config.add_route('users_index', '/users')
     config.add_route('users_create', '/users/new')

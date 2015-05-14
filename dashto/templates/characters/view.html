@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h4>Character Profile: {{ character.name }}</h4>
+
+    <p><a href="{{ 'characters_edit'|route_url(character_id=character.id) }}">Edit</a></p>
+{% endblock %}

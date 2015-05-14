@@ -1,6 +1,6 @@
 import datetime
 from cryptacular.bcrypt import BCRYPTPasswordManager
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, Unicode, UnicodeText
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, UnicodeText
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property

@@ -17,16 +17,24 @@ class CharactersController(BaseController):
 
     @view_config(route_name='characters_index', renderer='characters/index.html')
     def view_all(self):
-        characters = DBSession.query(Character).all()
+        characters = DBSession.query(Character).filter(Character.user == self.user).all()
         return {'characters': characters}
 
-    @view_config(route_name='characters_view', renderer='simple.html')
+    @view_config(route_name='characters_view', renderer='characters/view.html')
     def view(self):
         character = self.get_character()
-        return {
-            'title': 'View character {}'.format(character.id),
-            'body': character.name
-        }
+        return {'character': character}
+
+    @view_config(route_name='characters_edit', renderer='characters/edit.html')
+    def edit(self):
+        character = self.get_character()
+        form = forms.CharacterCreateForm(**self.form_kwargs)
+        if self.request.method == 'GET':
+            form.character_name.data = character.name
+        if self.validate(form):
+            character.name = form.character_name.data
+            return self.redirect('characters_view', character_id=character.id)
+        return {'character': character, 'form': form}
 
     @view_config(route_name='characters_create', renderer='characters/new.html')
     def create(self):
@@ -34,7 +42,6 @@ class CharactersController(BaseController):
         if self.validate(form):
             character = Character()
             character.name = form.character_name.data
-
             DBSession.add(character)
             return self.redirect('characters_index')
         return {'form': form}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h4>{{ character.name }}</h4>
+
+    <form action="{{ 'characters_edit'|route_url(character_id=character.id) }}" method="post"
+          enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        {{ macros.render_field(form.character_name, class='u-full-width', placeholder='character name') }}
+        <input class="button-primary" type="submit" value="Save Changes"/>
+    </form>
+{% endblock %}
