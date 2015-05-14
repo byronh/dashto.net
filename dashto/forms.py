@@ -1,10 +1,15 @@
 from pyramid_wtforms import SecureForm, validators
-from pyramid_wtforms import PasswordField, StringField
-from dashto.models import Campaign
+from pyramid_wtforms import PasswordField, StringField, TextAreaField
 
 
 class CampaignCreateForm(SecureForm):
-    campaign_name = StringField('Name', [validators.Length(min=3, max=Campaign.name.property.columns[0].type.length)])
+    campaign_name = StringField('Name', [validators.Length(min=3, max=64)])
+
+
+class CharacterCreateForm(SecureForm):
+    character_name = StringField('Name', [validators.Length(min=2, max=64)])
+    character_full_name = StringField('Full Name')
+    character_biography = TextAreaField('Biography')
 
 
 class ChatForm(SecureForm):

@@ -1,5 +1,5 @@
 """
-0 Initial revision
+0 initial revision
 
 Current ID: 2879aca2220
 Previous ID: None
@@ -19,8 +19,8 @@ def upgrade():
     op.create_table(
         'users',
         sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('name', sa.Unicode(length=255), nullable=False),
-        sa.Column('password', sa.Unicode(length=255), nullable=False),
+        sa.Column('name', sa.UnicodeText(), nullable=False),
+        sa.Column('password', sa.UnicodeText(), nullable=False),
         sa.Column('joined', sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint('id'),
         sa.UniqueConstraint('name')

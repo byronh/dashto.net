@@ -16,8 +16,8 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode(255), unique=True, nullable=False)
-    _password = Column('password', Unicode(255), nullable=False)
+    name = Column(UnicodeText, unique=True, nullable=False)
+    _password = Column('password', UnicodeText, nullable=False)
     joined = Column(DateTime, default=datetime.datetime.utcnow)
 
     campaigns = association_proxy('user_campaigns', 'campaign', creator=lambda c: CampaignMembership(campaign=c))
@@ -41,7 +41,7 @@ class Campaign(Base):
     __tablename__ = 'campaigns'
 
     id = Column(Integer, primary_key=True)
-    name = Column(Unicode(64), nullable=False)
+    name = Column(UnicodeText, nullable=False)
 
     users = association_proxy('campaign_users', 'user', creator=lambda u: CampaignMembership(user=u))
 
@@ -67,8 +67,9 @@ class Character(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey(User.id))
-    name = Column(Unicode(255), nullable=False)
-    portrait = Column(Unicode(2048))
+    name = Column(UnicodeText, nullable=False)
+    full_name = Column(UnicodeText)
+    portrait = Column(UnicodeText)
     biography = Column(UnicodeText)
 
     user = relationship(User, backref=backref('user_characters'))

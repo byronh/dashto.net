@@ -1,5 +1,5 @@
 """
-2 Add characters
+2 add characters
 
 Current ID: 38ba69ceda4
 Previous ID: 1fe86c0d74c
@@ -20,8 +20,8 @@ def upgrade():
         'characters',
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('user_id', sa.Integer(), nullable=True),
-        sa.Column('name', sa.Unicode(length=255), nullable=False),
-        sa.Column('portrait', sa.Unicode(length=2048), nullable=True),
+        sa.Column('name', sa.UnicodeText(), nullable=False),
+        sa.Column('portrait', sa.UnicodeText(), nullable=True),
         sa.Column('biography', sa.UnicodeText(), nullable=True),
         sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
         sa.PrimaryKeyConstraint('id')

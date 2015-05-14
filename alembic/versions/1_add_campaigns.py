@@ -1,5 +1,5 @@
 """
-1 Add campaigns
+1 add campaigns
 
 Current ID: 1fe86c0d74c
 Previous ID: 2879aca2220
@@ -19,7 +19,7 @@ def upgrade():
     op.create_table(
         'campaigns',
         sa.Column('id', sa.Integer(), nullable=False),
-        sa.Column('name', sa.Unicode(length=255), nullable=False),
+        sa.Column('name', sa.UnicodeText(), nullable=False),
         sa.PrimaryKeyConstraint('id')
     )
     op.create_table(
