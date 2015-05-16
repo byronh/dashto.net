@@ -4,4 +4,8 @@
     <h4>Character Profile: {{ character.name }}</h4>
 
     <p><a href="{{ 'characters_edit'|route_url(character_id=character.id) }}">Edit</a></p>
+
+    <p>{{ character.portrait or '' }}</p>
+    <p>{{ character.full_name or '' }}</p>
+    <p>{{ character.biography or '' }}</p>
 {% endblock %}

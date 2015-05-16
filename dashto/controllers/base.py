@@ -1,4 +1,6 @@
+from dashto import errors
 from pyramid import httpexceptions
+from pyramid_storage import exceptions as fileexceptions
 from redis import StrictRedis
 
 
@@ -19,6 +21,15 @@ class BaseController:
         if 'csrf_token' in form.errors:
             raise httpexceptions.HTTPUnauthorized()
         return False
+
+    def file_upload(self, file_field, randomize=True):
+        try:
+            file = file_field.data
+            if file is not None and file != b'':
+                return self.request.storage.save(file, randomize=randomize)
+        except fileexceptions.FileNotAllowed:
+            raise errors.InvalidFileError()
+        return None
 
     @property
     def params(self):
