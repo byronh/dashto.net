@@ -38,7 +38,9 @@ class CharactersController(BaseController):
             character.full_name = form.character_full_name.data
             character.biography = form.character_biography.data
             try:
-                character.portrait = self.file_upload(form.character_portrait)
+                file = self.file_upload(form.character_portrait, folder='portraits')
+                if file:
+                    character.portrait = file
                 return self.redirect('characters_view', character_id=character.id)
             except errors.InvalidFileError:
                 form.character_portrait.errors.append('Only image files are allowed')

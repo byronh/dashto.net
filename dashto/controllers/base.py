@@ -22,13 +22,15 @@ class BaseController:
             raise httpexceptions.HTTPUnauthorized()
         return False
 
-    def file_upload(self, file_field, randomize=True):
-        try:
-            file = file_field.data
-            if file is not None and file != b'':
-                return self.request.storage.save(file, randomize=randomize)
-        except fileexceptions.FileNotAllowed:
-            raise errors.InvalidFileError()
+    def file_upload(self, file_field, extensions=None, folder=None, randomize=True):
+        file = file_field.data
+        if file is not None and file != b'':
+            if not self.request.storage.file_allowed(file):
+                raise errors.InvalidFileError()
+            try:
+                return self.request.storage.save(file, extensions=extensions, folder=folder, randomize=randomize)
+            except fileexceptions.FileNotAllowed:
+                raise errors.InvalidFileError()
         return None
 
     @property
