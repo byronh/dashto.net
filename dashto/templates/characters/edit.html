@@ -7,6 +7,9 @@
           enctype="multipart/form-data">
         {{ form.csrf_token }}
         {{ macros.render_field(form.character_name, class='u-full-width', placeholder='character name') }}
+        {{ macros.render_field(form.character_full_name, class='u-full-width', placeholder='full name') }}
+        {{ macros.render_field(form.character_portrait, class='u-full-width') }}
+        {{ macros.render_field(form.character_biography, class='u-full-width', rows='10', placeholder='biography') }}
         <input class="button-primary" type="submit" value="Save Changes"/>
     </form>
 {% endblock %}

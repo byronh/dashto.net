@@ -29,3 +29,7 @@
 #navigation a:hover {
     text-decoration: underline;
 }
+
+textarea {
+    height: auto;
+}

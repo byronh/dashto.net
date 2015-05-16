@@ -13,6 +13,7 @@ requires = [
     'pyramid_jinja2',
     'pyramid_debugtoolbar',
     'pyramid_redis_sessions',
+    'pyramid_storage',
     'pyramid_tm',
     'pyramid_wtforms',
     'sqlalchemy',

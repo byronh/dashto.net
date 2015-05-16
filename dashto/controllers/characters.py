@@ -28,11 +28,15 @@ class CharactersController(BaseController):
     @view_config(route_name='characters_edit', renderer='characters/edit.html')
     def edit(self):
         character = self.get_character()
-        form = forms.CharacterCreateForm(**self.form_kwargs)
+        form = forms.CharacterEditForm(**self.form_kwargs)
         if self.request.method == 'GET':
             form.character_name.data = character.name
+            form.character_full_name.data = character.full_name
+            form.character_biography.data = character.biography
         if self.validate(form):
             character.name = form.character_name.data
+            character.full_name = form.character_full_name.data
+            character.biography = form.character_biography.data
             return self.redirect('characters_view', character_id=character.id)
         return {'character': character, 'form': form}
 

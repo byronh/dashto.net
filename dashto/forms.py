@@ -1,5 +1,5 @@
 from pyramid_wtforms import SecureForm, validators
-from pyramid_wtforms import PasswordField, StringField, TextAreaField
+from pyramid_wtforms import FileField, PasswordField, StringField, TextAreaField
 
 
 class CampaignCreateForm(SecureForm):
@@ -8,8 +8,13 @@ class CampaignCreateForm(SecureForm):
 
 class CharacterCreateForm(SecureForm):
     character_name = StringField('Name', [validators.Length(min=2, max=64)])
+
+
+class CharacterEditForm(SecureForm):
+    character_name = StringField('Name', [validators.Length(min=2, max=64)])
     character_full_name = StringField('Full Name')
     character_biography = TextAreaField('Biography')
+    character_portrait = FileField('Portrait')
 
 
 class ChatForm(SecureForm):
