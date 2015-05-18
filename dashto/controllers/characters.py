@@ -4,29 +4,25 @@ from dashto.models import DBSession
 from dashto.models import Character
 from pyramid import httpexceptions
 from pyramid.view import view_config
-from sqlalchemy.orm import undefer
 
 
 class CharactersController(BaseController):
 
-    def get_character(self, full=False):
+    def get_character(self):
         """ :rtype: Character """
-        query = DBSession.query(Character)
-        if full:
-            query = query.options(undefer('biography'))
-        character = query.get(self.params['character_id'])
+        character = DBSession.query(Character).get(self.params['character_id'])
         if not character:
             raise httpexceptions.HTTPNotFound()
         return character
 
     @view_config(route_name='characters_view', renderer='characters/view.html')
     def view(self):
-        character = self.get_character(full=True)
+        character = self.get_character()
         return {'character': character}
 
     @view_config(route_name='characters_edit', renderer='characters/edit.html')
     def edit(self):
-        character = self.get_character(full=True)
+        character = self.get_character()
         if character.user != self.user:
             raise httpexceptions.HTTPForbidden()
         form = forms.CharacterEditForm(**self.form_kwargs)

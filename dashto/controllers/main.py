@@ -16,10 +16,11 @@ class MainController(BaseController):
     def login(self):
         form = forms.UserLoginForm(**self.form_kwargs)
         if self.validate(form):
-            user = DBSession.query(User).options(undefer('password')).filter(User.name == form.user_name.data).first()
+            query = DBSession.query(User).options(undefer('password'))
+            user = query.filter(User.name == form.user_name.data).first()
             if user and user.validate_password(form.user_password.data):
                 self.request.session['user_id'] = user.id
-                return self.redirect('home')
+                return self.redirect('campaigns_index')
             else:
                 form.user_name.errors.append('Invalid credentials')
         return {'form': form}

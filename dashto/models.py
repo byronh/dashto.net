@@ -18,7 +18,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(UnicodeText, unique=True, nullable=False)
     _password = deferred(Column('password', UnicodeText, nullable=False))
-    joined = deferred(Column(DateTime, default=datetime.datetime.utcnow))
+    joined = Column(DateTime, default=datetime.datetime.utcnow)
 
     campaigns = association_proxy('user_campaigns', 'campaign', creator=lambda c: Membership(campaign=c))
     characters = association_proxy('user_characters', 'character')
@@ -70,6 +70,6 @@ class Character(Base):
     name = Column(UnicodeText, nullable=False)
     full_name = Column(UnicodeText)
     portrait = Column(UnicodeText)
-    biography = deferred(Column(UnicodeText))
+    biography = Column(UnicodeText)
 
     user = relationship(User, backref=backref('user_characters'))

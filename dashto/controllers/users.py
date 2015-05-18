@@ -12,7 +12,10 @@ class UsersController(BaseController):
 
     def get_user(self):
         """ :rtype: User """
-        user = DBSession.query(User).get(self.params['user_id'])
+        user_id = self.params['user_id']
+        if user_id == str(self.user.id):
+            return self.user
+        user = DBSession.query(User).get(user_id)
         if not user:
             raise httpexceptions.HTTPNotFound()
         return user

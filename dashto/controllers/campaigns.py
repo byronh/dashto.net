@@ -35,8 +35,9 @@ class CampaignsController(BaseController):
     @view_config(route_name='campaigns_play', renderer='campaigns/play.html')
     def play(self):
         campaign = self.get_campaign()
-        memberships = self.get_memberships(campaign)
-        if self.user.id not in [membership.user.id for membership in memberships]:
+        query = DBSession.query(Membership).join(User).filter(Membership.campaign == campaign)
+        membership = query.filter(Membership.user == self.user).first()
+        if not membership:
             raise httpexceptions.HTTPForbidden()
         form = forms.ChatForm(**self.form_kwargs)
         return {'campaign': campaign, 'form': form}
