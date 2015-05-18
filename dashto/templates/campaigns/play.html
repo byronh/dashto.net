@@ -3,65 +3,113 @@
 {% block head %}
     {{ super() }}
     <script type="text/javascript">
-    $(document).ready(function() {
-        var port = 5001;
-        var conn = new WebSocket('ws://' + document.domain + ':' + port);
-        var message_input = $('#message');
+        $(document).ready(function() {
+            var port = 5001;
+            var conn = new WebSocket('ws://' + document.domain + ':' + port);
+            var message_input = $('#message');
 
-        conn.onopen = function() {
-            var data = {'cookie': document.cookie, 'csrf_token': $('#csrf_token').val()};
-            conn.send(JSON.stringify(data));
+            var scrollToBottom = function() {
+                var chatbox = $('#chatbox');
+                chatbox.stop().animate({
+                    scrollTop: chatbox[0].scrollHeight
+                }, 800);
+            };
 
-            var li = $('<li/>', {text: 'Connected to chat server at port ' + port, 'class': 'success'});
-            $('#messages').append(li);
-        };
-
-        conn.onclose = function() {
-            var li = $('<li/>', {text: 'Chat server at port ' + port + ' stopped', 'class': 'error'});
-            $('#messages').append(li);
-        };
-
-        conn.onerror = function() {
-            var li = $('<li/>', {text: 'Failed to connect to chat server at port ' + port, 'class': 'error'});
-            $('#messages').append(li);
-        };
-
-        conn.onmessage = function(message) {
-            var li = $('<li/>', {text: message.data});
-            $('#messages').append(li);
-        };
-
-        $('#chat-form').submit(function() {
-            var message = message_input.val();
-            if (message) {
-                var data = {'message': message};
+            conn.onopen = function() {
+                var data = {'cookie': document.cookie, 'csrf_token': $('#csrf_token').val()};
                 conn.send(JSON.stringify(data));
-            }
-            message_input.val('');
-            message_input.focus();
-            return false;
-        });
 
-        message_input.focus();
-    });
+                var li = $('<li/>', {text: 'Connected to chat server at port ' + port, 'class': 'success'});
+                $('#messages').append(li);
+                scrollToBottom();
+            };
+
+            conn.onclose = function() {
+                var li = $('<li/>', {text: 'Chat server at port ' + port + ' stopped', 'class': 'error'});
+                $('#messages').append(li);
+                scrollToBottom();
+            };
+
+            conn.onerror = function() {
+                var li = $('<li/>', {text: 'Failed to connect to chat server at port ' + port, 'class': 'error'});
+                $('#messages').append(li);
+                scrollToBottom();
+            };
+
+            conn.onmessage = function(message) {
+                var li = $('<li/>', {text: message.data});
+                $('#messages').append(li);
+                scrollToBottom();
+            };
+
+            var sendMessage = function() {
+                var message = message_input.val();
+                if (message) {
+                    var data = {'message': message};
+                    conn.send(JSON.stringify(data));
+                }
+                message_input.val('');
+                message_input.focus();
+                return false;
+            };
+
+            message_input.keypress(function(e) {
+                if (e.which == 13 && !e.shiftKey && !e.ctrlKey) {
+                    sendMessage();
+                    return false;
+                }
+                return true;
+            });
+
+            $('#chat-form').submit(sendMessage);
+
+            message_input.focus();
+        });
     </script>
     <style>
-        #messages { list-style-type: none; margin: 0; padding: 0; }
-        #messages li { padding: 5px 10px; }
-        #messages li:nth-child(odd) { background: #2f2f2e; }
-        #messages .error { color: #f00; }
-        #messages .success { color: forestgreen; }
+        #chatbox {
+            height: 40rem;
+            word-wrap: break-word;
+            overflow-y: auto;
+            margin: 2em 0;
+        }
+
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #messages li {
+            padding: 5px 10px;
+        }
+
+        #messages li:nth-child(odd) {
+            background: #2f2f2e;
+        }
+
+        #messages .error {
+            color: #f00;
+        }
+
+        #messages .success {
+            color: forestgreen;
+        }
     </style>
 {% endblock %}
 
 {% block content %}
     <h2>{{ campaign.name.title() }}</h2>
+
+    <div id="chatbox">
+        <ul id="messages">
+        </ul>
+    </div>
+
     <form id="chat-form">
         {{ form.csrf_token }}
         <label for="message">Message</label>
-        <input id="message" name="message" type="text" class="u-full-width"
-               autocomplete="off" placeholder="your message here..."/>
+        <textarea id="message" name="message" class="u-full-width" placeholder="your message here..."></textarea>
         <input class="button-primary" type="submit" value="Send"/>
     </form>
-    <ul id="messages"></ul>
 {% endblock %}

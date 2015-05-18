@@ -41,6 +41,7 @@
 
 textarea {
     height: auto;
+    resize: vertical;
 }
 
 #footer {
