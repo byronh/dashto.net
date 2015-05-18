@@ -9,7 +9,11 @@
         {{ macros.render_field(form.character_name, class='u-full-width', placeholder='character name') }}
         {{ macros.render_field(form.character_full_name, class='u-full-width', placeholder='full name') }}
         {{ macros.render_field(form.character_portrait, class='u-full-width') }}
+        {% if character.portrait %}
+        <img src="{{ request.storage.url(character.portrait) }}" alt="{{ character.name }}"/>
+        {% endif %}
         {{ macros.render_field(form.character_biography, class='u-full-width', rows='10', placeholder='biography') }}
         <input class="button-primary" type="submit" value="Save Changes"/>
+        <a href="{{ 'characters_view'|route_url(character_id=character.id) }}"><button type="button">Cancel</button></a>
     </form>
 {% endblock %}

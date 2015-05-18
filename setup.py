@@ -19,6 +19,7 @@ requires = [
     'sqlalchemy',
     'transaction',
     'waitress',
+    'wand',
     'webhelpers',
     'websockets',
     'zope.sqlalchemy',

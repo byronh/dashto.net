@@ -5,7 +5,9 @@
 
     <p><a href="{{ 'characters_edit'|route_url(character_id=character.id) }}">Edit</a></p>
 
-    <p>{{ character.portrait or '' }}</p>
+    {% if character.portrait %}
+    <p><img src="{{ request.storage.url(character.portrait) }}" alt="{{ character.name }}"/></p>
+    {% endif %}
     <p>{{ character.full_name or '' }}</p>
     <p>{{ character.biography or '' }}</p>
 {% endblock %}

@@ -1,4 +1,4 @@
-from dashto import errors, forms
+from dashto import errors, files, forms
 from dashto.controllers.base import BaseController
 from dashto.models import DBSession
 from dashto.models import Character
@@ -41,13 +41,21 @@ class CharactersController(BaseController):
             character.name = form.character_name.data
             character.full_name = form.character_full_name.data
             character.biography = form.character_biography.data
-            try:
-                file = self.file_upload(form.character_portrait, folder='portraits')
-                if file:
-                    character.portrait = file
+            portrait = form.character_portrait.data
+            if portrait is not None and hasattr(portrait, 'file') and portrait.file != b'':
+                old_portrait = character.portrait
+                try:
+                    thumbnail = files.create_thumbnail(portrait.file)
+                    filename = files.file_upload(self.request, thumbnail, portrait.filename, folder='portraits')
+                    thumbnail.close()
+                    character.portrait = filename
+                    return self.redirect('characters_view', character_id=character.id)
+                except errors.InvalidFileError:
+                    form.character_portrait.errors.append('Only image files are allowed')
+                finally:
+                    self.request.storage.delete(old_portrait)
+            else:
                 return self.redirect('characters_view', character_id=character.id)
-            except errors.InvalidFileError:
-                form.character_portrait.errors.append('Only image files are allowed')
         return {'character': character, 'form': form}
 
     @view_config(route_name='characters_create', renderer='characters/new.html')

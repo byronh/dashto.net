@@ -7,5 +7,6 @@
         {{ form.csrf_token }}
         {{ macros.render_field(form.character_name, class='u-full-width', placeholder='character name') }}
         <input class="button-primary" type="submit" value="Create Character"/>
+        <a href="{{ 'characters_index'|route_url }}"><button type="button">Cancel</button></a>
     </form>
 {% endblock %}

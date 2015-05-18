@@ -7,5 +7,6 @@
         {{ form.csrf_token }}
         {{ macros.render_field(form.campaign_name, class='u-full-width', placeholder='campaign name') }}
         <input class="button-primary" type="submit" value="Create Campaign"/>
+        <a href="{{ 'campaigns_index'|route_url }}"><button type="button">Cancel</button></a>
     </form>
 {% endblock %}

@@ -8,5 +8,6 @@
         {{ macros.render_field(form.user_name, class='u-full-width', placeholder='username') }}
         {{ macros.render_field(form.user_password, class='u-full-width', placeholder='password') }}
         <input class="button-primary" type="submit" value="Create User"/>
+        <a href="{{ 'users_index'|route_url }}"><button type="button">Cancel</button></a>
     </form>
 {% endblock %}
