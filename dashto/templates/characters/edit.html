@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>{{ character.name }}</h2>
+    <h2>Edit character</h2>
 
     <form action="{{ 'characters_edit'|route_url(character_id=character.id) }}" method="post"
           enctype="multipart/form-data">

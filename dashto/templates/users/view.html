@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>{{ user.name.title() }}</h2>
+    <p>Joined {{ user.joined.strftime('%B %-d, %Y at %-I:%M %p') }}</p>
+
+    {% if characters %}
+    <h3>Characters</h3>
+    <ul>
+        {% for character in characters %}
+            <li>
+                <a href="{{ 'characters_view'|route_url(character_id=character.id) }}">{{ character.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if user == request.user %}
+    <a href="{{ 'characters_create'|route_url }}">
+        <button type="button" class="button-primary">Create new character</button>
+    </a>
+    {% endif %}
+{% endblock %}

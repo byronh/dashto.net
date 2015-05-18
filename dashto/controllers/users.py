@@ -1,7 +1,8 @@
 from dashto import forms
 from dashto.auth import Permissions
 from dashto.controllers.base import BaseController
-from dashto.models import DBSession, User
+from dashto.models import DBSession
+from dashto.models import Character, User
 from pyramid import httpexceptions
 from pyramid.view import view_config
 from sqlalchemy import exc as sqlexceptions
@@ -21,13 +22,11 @@ class UsersController(BaseController):
         users = DBSession.query(User).order_by(User.name).all()
         return {'users': users}
 
-    @view_config(route_name='users_view', renderer='simple.html')
+    @view_config(route_name='users_view', renderer='users/view.html')
     def view(self):
         user = self.get_user()
-        return {
-            'title': 'View user {}'.format(user.id),
-            'body': user.name
-        }
+        characters = DBSession.query(Character).filter(Character.user == user).all()
+        return {'user': user, 'characters': characters}
 
     @view_config(route_name='users_edit', renderer='simple.html')
     def edit(self):

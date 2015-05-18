@@ -1,13 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Character Profile: {{ character.name }}</h2>
-
-    <p><a href="{{ 'characters_edit'|route_url(character_id=character.id) }}">Edit</a></p>
+    <h2>{{ (character.full_name if character.full_name else character.name).title() }}</h2>
 
     {% if character.portrait %}
     <p><img src="{{ request.storage.url(character.portrait) }}" alt="{{ character.name }}"/></p>
     {% endif %}
-    <p>{{ character.full_name or '' }}</p>
-    <p>{{ character.biography or '' }}</p>
+    {% if character.biography %}
+    <h3>Biography</h3>
+    <p>{{ character.biography }}</p>
+    {% endif %}
+
+    {% if character.user == request.user %}
+    <a href="{{ 'characters_edit'|route_url(character_id=character.id) }}">
+        <button type="button" class="button-primary">Edit</button>
+    </a>
+    {% endif %}
 {% endblock %}

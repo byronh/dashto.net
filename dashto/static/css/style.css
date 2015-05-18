@@ -11,6 +11,10 @@
     margin: 0.5em;
 }
 
+#app-title a {
+    text-decoration: none;
+}
+
 #content {
     min-height: 40rem;
 }
@@ -41,4 +45,8 @@ textarea {
 
 #footer {
     margin-top: 1rem;
+}
+
+#content li {
+    list-style: none;
 }

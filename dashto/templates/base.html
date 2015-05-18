@@ -19,14 +19,12 @@
 
 <div class="container">
     <div class="row center">
-        <h1 id="app-title">dashto.net</h1>
+        <h1 id="app-title"><a href="{{ 'home'|route_url }}">dashto.net</a></h1>
     </div>
     <div class="row center" id="navigation">
         <ul>
-            <li><a href="{{ 'home'|route_url }}">Home</a></li>
             {% if request.user %}
                 <li><a href="{{ 'campaigns_index'|route_url }}">Campaigns</a></li>
-                <li><a href="{{ 'characters_index'|route_url }}">Characters</a></li>
                 <li><a href="{{ 'users_index'|route_url }}">Users</a></li>
                 <li><a href="{{ 'users_view'|route_url(user_id=request.user.id) }}">Profile</a></li>
                 <li><a href="{{ 'logout'|route_url }}">Logout</a></li>

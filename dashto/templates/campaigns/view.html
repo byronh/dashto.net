@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h2>Campaign: {{ campaign.name }}</h2>
+    <h2>{{ campaign.name.title() }}</h2>
 
-    <p>Members:</p>
+    <p>Campaign information goes here</p>
+
+    {% if memberships %}
+    <h3>Members:</h3>
     <ul>
         {% for membership in memberships %}
         <li>
@@ -12,4 +15,5 @@
         </li>
         {% endfor %}
     </ul>
+    {% endif %}
 {% endblock %}

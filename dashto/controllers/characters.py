@@ -19,11 +19,6 @@ class CharactersController(BaseController):
             raise httpexceptions.HTTPNotFound()
         return character
 
-    @view_config(route_name='characters_index', renderer='characters/index.html')
-    def view_all(self):
-        characters = DBSession.query(Character).filter(Character.user == self.user).all()
-        return {'characters': characters}
-
     @view_config(route_name='characters_view', renderer='characters/view.html')
     def view(self):
         character = self.get_character(full=True)
@@ -32,6 +27,8 @@ class CharactersController(BaseController):
     @view_config(route_name='characters_edit', renderer='characters/edit.html')
     def edit(self):
         character = self.get_character(full=True)
+        if character.user != self.user:
+            raise httpexceptions.HTTPForbidden()
         form = forms.CharacterEditForm(**self.form_kwargs)
         if self.request.method == 'GET':
             form.character_name.data = character.name
@@ -53,7 +50,8 @@ class CharactersController(BaseController):
                 except errors.InvalidFileError:
                     form.character_portrait.errors.append('Only image files are allowed')
                 finally:
-                    self.request.storage.delete(old_portrait)
+                    if old_portrait and self.request.storage.exists(old_portrait):
+                        self.request.storage.delete(old_portrait)
             else:
                 return self.redirect('characters_view', character_id=character.id)
         return {'character': character, 'form': form}
@@ -66,5 +64,5 @@ class CharactersController(BaseController):
             character.name = form.character_name.data
             character.user = self.user
             DBSession.add(character)
-            return self.redirect('characters_index')
+            return self.redirect('users_view', user_id=self.user.id)
         return {'form': form}

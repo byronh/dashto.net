@@ -2,7 +2,6 @@
 
 {% block content %}
     <h2>Campaigns</h2>
-    <p><a href="{{ 'campaigns_create'|route_url }}">Create new campaign</a></p>
     <ul>
         {% for campaign in campaigns %}
             <li>
@@ -10,6 +9,11 @@
                 -
                 <a href="{{ 'campaigns_play'|route_url(campaign_id=campaign.id) }}">Play</a>
             </li>
+        {% else %}
+            <li>None</li>
         {% endfor %}
     </ul>
+    <a href="{{ 'campaigns_create'|route_url }}">
+        <button type="button" class="button-primary">Create new campaign</button>
+    </a>
 {% endblock %}
