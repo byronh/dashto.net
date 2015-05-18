@@ -48,14 +48,14 @@
     <style>
         #messages { list-style-type: none; margin: 0; padding: 0; }
         #messages li { padding: 5px 10px; }
-        #messages li:nth-child(odd) { background: #eee; }
+        #messages li:nth-child(odd) { background: #2f2f2e; }
         #messages .error { color: #f00; }
         #messages .success { color: forestgreen; }
     </style>
 {% endblock %}
 
 {% block content %}
-    <h4>{{ campaign.name }}</h4>
+    <h2>{{ campaign.name }}</h2>
     <form id="chat-form">
         {{ form.csrf_token }}
         <label for="message">Message</label>

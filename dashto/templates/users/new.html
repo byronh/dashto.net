@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h4>Create User</h4>
+    <h2>Create User</h2>
 
     <form action="{{ 'users_create'|route_url }}" method="post" enctype="multipart/form-data">
         {{ form.csrf_token }}

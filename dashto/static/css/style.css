@@ -8,13 +8,26 @@
 }
 
 #app-title {
-    margin: 1em;
+    margin: 0.5em;
+}
+
+#content {
+    min-height: 40rem;
 }
 
 #navigation ul {
     list-style: none;
-    background-color: #f0f0f0;
+    background-color: #2f2f2e;
+    border-radius: 4px;
     padding: 1rem;
+}
+
+#navigation a {
+    color: #dcdcdc;
+}
+
+#navigation a:hover {
+    color: #d27624;
 }
 
 #navigation ul li {
@@ -22,14 +35,10 @@
     margin: 0 2rem;
 }
 
-#navigation a {
-    text-decoration: none;
-}
-
-#navigation a:hover {
-    text-decoration: underline;
-}
-
 textarea {
     height: auto;
+}
+
+#footer {
+    margin-top: 1rem;
 }

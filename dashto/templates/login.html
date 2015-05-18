@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h4>Login</h4>
+    <h2>Login</h2>
 
     <form action="{{ 'login'|route_url }}" method="post" enctype="multipart/form-data">
         {{ form.csrf_token }}
