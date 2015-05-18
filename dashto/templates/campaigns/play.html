@@ -55,7 +55,7 @@
 {% endblock %}
 
 {% block content %}
-    <h2>{{ campaign.name }}</h2>
+    <h2>{{ campaign.name.title() }}</h2>
     <form id="chat-form">
         {{ form.csrf_token }}
         <label for="message">Message</label>

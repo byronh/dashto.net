@@ -16,4 +16,10 @@
         {% endfor %}
     </ul>
     {% endif %}
+
+    {% if request.user.id in user_ids %}
+        <a href="{{ 'campaigns_play'|route_url(campaign_id=campaign.id) }}">
+            <button type="button" class="button-primary">Play</button>
+        </a>
+    {% endif %}
 {% endblock %}

@@ -16,6 +16,10 @@ class CampaignsController(BaseController):
             raise httpexceptions.HTTPNotFound()
         return campaign
 
+    def get_memberships(self, campaign):
+        query = DBSession.query(Membership).join(User).filter(Membership.campaign == campaign)
+        return query.options(contains_eager(Membership.user)).order_by(Membership.is_gm.desc(), User.name).all()
+
     @view_config(route_name='campaigns_index', renderer='campaigns/index.html')
     def view_all(self):
         campaigns = DBSession.query(Campaign).order_by(Campaign.name).all()
@@ -24,13 +28,16 @@ class CampaignsController(BaseController):
     @view_config(route_name='campaigns_view', renderer='campaigns/view.html')
     def view(self):
         campaign = self.get_campaign()
-        memberships = DBSession.query(Membership).join(User).filter(Membership.campaign == campaign)\
-            .options(contains_eager(Membership.user)).order_by(Membership.is_gm.desc(), User.name).all()
-        return {'campaign': campaign, 'memberships': memberships}
+        memberships = self.get_memberships(campaign)
+        user_ids = [membership.user.id for membership in memberships]
+        return {'campaign': campaign, 'memberships': memberships, 'user_ids': user_ids}
 
     @view_config(route_name='campaigns_play', renderer='campaigns/play.html')
     def play(self):
         campaign = self.get_campaign()
+        memberships = self.get_memberships(campaign)
+        if self.user.id not in [membership.user.id for membership in memberships]:
+            raise httpexceptions.HTTPForbidden()
         form = forms.ChatForm(**self.form_kwargs)
         return {'campaign': campaign, 'form': form}
 
