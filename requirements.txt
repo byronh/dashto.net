@@ -1,4 +1,3 @@
--e git+https://github.com/byronh/dashto.net.git#egg=dashto.net
 -e git+https://github.com/aio-libs/aioredis.git#egg=aioredis-0.1.5
 
 alembic==0.7.6
