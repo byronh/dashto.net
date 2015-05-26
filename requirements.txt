@@ -1,4 +1,5 @@
 -e git+https://github.com/aio-libs/aioredis.git#egg=aioredis-0.1.5
+-e git+https://github.com/byronh/dashto.net.git#egg=dashto.net
 
 alembic==0.7.6
 cryptacular==1.4.1
