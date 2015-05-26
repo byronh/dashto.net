@@ -2,14 +2,8 @@
 Python 3 web application
 
 ### Installation
-For deployment:
 ```
-python setup.py install
-```
-
-For development:
-```
-python setup.py develop
+pip install -r requirements.txt
 ```
 
 ### Database setup

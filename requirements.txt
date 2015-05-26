@@ -1,0 +1,36 @@
+-e git+https://github.com/byronh/dashto.net.git#egg=dashto.net
+-e git+https://github.com/aio-libs/aioredis.git#egg=aioredis-0.1.5
+
+alembic==0.7.6
+cryptacular==1.4.1
+Jinja2==2.7.3
+Mako==1.0.1
+MarkupSafe==0.23
+PasteDeploy==1.5.2
+pbkdf2==1.3
+psycopg2==2.6
+Pygments==2.0.2
+pyramid==1.5.7
+pyramid-debugtoolbar==2.3
+pyramid-jinja2==2.5
+pyramid-mako==1.0.2
+pyramid-redis-sessions==1.0.1
+pyramid-storage==0.0.8
+pyramid-tm==0.12
+pyramid-wtforms==2.0.1
+redis==2.10.3
+repoze.lru==0.6
+SQLAlchemy==1.0.4
+transaction==1.4.4
+translationstring==1.3
+venusian==1.0
+waitress==0.8.9
+Wand==0.4.0
+WebHelpers==1.3
+WebOb==1.4.1
+websockets==2.4
+wheel==0.24.0
+WTForms==2.0.2
+zope.deprecation==4.1.2
+zope.interface==4.1.2
+zope.sqlalchemy==0.7.6
