@@ -3,6 +3,8 @@ import json
 import signal
 import aioredis
 import websockets
+from aioredis.commands.pubsub import PubSubCommandsMixin
+from aioredis.util import Channel
 from dashto.chat import errors
 from dashto.chat.client import Client
 
@@ -41,8 +43,8 @@ class ChatServer:
     @asyncio.coroutine
     def connect_to_redis(self):
         self.redis = yield from aioredis.create_redis(self.redis_settings)
-        self.pub = yield from aioredis.create_connection(self.redis_settings)
-        self.sub = yield from aioredis.create_connection(self.redis_settings)
+        self.pub = yield from aioredis.create_redis(self.redis_settings)
+        self.sub = yield from aioredis.create_redis(self.redis_settings)
 
     @asyncio.coroutine
     def client_handler(self, client, path):
@@ -51,7 +53,9 @@ class ChatServer:
             yield from self.on_connect(client, path)
             while True:
                 data = yield from self.receive(client)
-                yield from self.pub.execute('publish', 'chan:1', 'Hello!')
+                pub = self.pub
+                """ :type pub: PubSubCommandsMixin """
+                yield from pub.publish_json('chan:1', {'message': 'Pub/sub is working'})
                 yield from self.broadcast(client.user, data['message'])
         except errors.DisconnectError as e:
             print('Disconnecting {}: {}'.format(client.user, e))
@@ -59,13 +63,15 @@ class ChatServer:
 
     @asyncio.coroutine
     def publish_handler(self):
-        res = yield from self.sub.execute('subscribe', 'chan:1')
-        if res[2] != 1:
+        res = yield from self.sub.subscribe('chan:1')
+        if len(res) != 1:
             raise errors.FatalServerError('Failed to subscribe to channel')
-        print('Subscribed to channel: {}'.format('chan:1'))
+        channel = res[0]
+        """ :type channel: Channel """
+        print('Subscribed to {}'.format(channel.name.decode()))
         while True:
-            message = yield from self.sub.pubsub_channels['chan:1'].get()
-            print('Received message from subscribed channel: {}'.format(message))
+            message = yield from channel.get_json()
+            print('Received JSON message from subscribed channel: {}'.format(message))
 
     @asyncio.coroutine
     def on_connect(self, client, path):
