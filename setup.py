@@ -5,7 +5,7 @@ from setuptools.command.test import test as test_command
 
 
 requires = [
-    'aioredis==0.1.5',
+    'aioredis',
     'alembic',
     'cryptacular',
     'psycopg2',
