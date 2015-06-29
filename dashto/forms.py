@@ -4,6 +4,7 @@ from pyramid_wtforms import FileField, IntegerField, PasswordField, StringField,
 
 class CampaignCreateForm(SecureForm):
     campaign_name = StringField('Name', [validators.Length(min=3, max=64)])
+    campaign_description = TextAreaField('Description')
 
 
 class CampaignRequestJoinForm(SecureForm):

@@ -3,7 +3,9 @@
 {% block content %}
     <h2>{{ campaign.name.title() }}</h2>
 
-    <p>Campaign information goes here</p>
+    {% if campaign.description %}
+        <p>{{ campaign.description }}</p>
+    {% endif %}
 
     {% if memberships %}
     <h3>Members:</h3>

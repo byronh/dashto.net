@@ -70,6 +70,7 @@ class CampaignsController(BaseController):
         if self.validate(form):
             campaign = Campaign()
             campaign.name = form.campaign_name.data
+            campaign.description = form.campaign_description.data
 
             membership = Membership()
             membership.user = self.user

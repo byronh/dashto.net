@@ -6,6 +6,7 @@
     <form action="{{ 'campaigns_create'|route_url }}" method="post" enctype="multipart/form-data">
         {{ form.csrf_token }}
         {{ macros.render_field(form.campaign_name, class='u-full-width', placeholder='campaign name') }}
+        {{ macros.render_field(form.campaign_description, class='u-full-width', rows='10', placeholder='description') }}
         <input class="button-primary" type="submit" value="Create Campaign"/>
         <a href="{{ 'campaigns_index'|route_url }}"><button type="button">Cancel</button></a>
     </form>
