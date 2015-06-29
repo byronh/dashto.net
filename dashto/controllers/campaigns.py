@@ -1,3 +1,4 @@
+import json
 from dashto import forms
 from dashto.controllers.base import BaseController
 from dashto.models import DBSession
@@ -61,7 +62,12 @@ class CampaignsController(BaseController):
         membership.user = self.user
         membership.campaign = campaign
         membership.status = Membership.Status.pending.value
+
         DBSession.add(membership)
+        DBSession.flush()
+
+        self.publish('chan:1', {'message': 'Created new membership for {}'.format(self.user.id)})
+
         return self.redirect('campaigns_view', campaign_id=campaign.id)
 
     @view_config(route_name='campaigns_create', renderer='campaigns/new.html')

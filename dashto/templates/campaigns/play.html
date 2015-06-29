@@ -16,28 +16,35 @@
             };
 
             conn.onopen = function() {
-                var data = {'cookie': document.cookie, 'csrf_token': $('#csrf_token').val()};
+                var data = {
+                    'channel_id': $('#campaign_id').val(),
+                    'cookie': document.cookie,
+                    'csrf_token': $('#csrf_token').val()
+                };
                 conn.send(JSON.stringify(data));
 
-                var li = $('<li/>', {text: 'Connected to chat server at port ' + port, 'class': 'success'});
+                var li = $('<li/>', {text: 'Connected to server at port ' + port, 'class': 'success'});
                 $('#messages').append(li);
                 scrollToBottom();
             };
 
             conn.onclose = function() {
-                var li = $('<li/>', {text: 'Chat server at port ' + port + ' stopped', 'class': 'error'});
+                var li = $('<li/>', {text: 'Server at port ' + port + ' stopped', 'class': 'error'});
                 $('#messages').append(li);
                 scrollToBottom();
             };
 
             conn.onerror = function() {
-                var li = $('<li/>', {text: 'Failed to connect to chat server at port ' + port, 'class': 'error'});
+                var li = $('<li/>', {text: 'Failed to connect to server at port ' + port, 'class': 'error'});
                 $('#messages').append(li);
                 scrollToBottom();
             };
 
-            conn.onmessage = function(message) {
-                var li = $('<li/>', {text: message.data});
+            conn.onmessage = function(message_data) {
+                var data = JSON.parse(message_data.data);
+                var message = JSON.parse(data);
+                console.log(message);
+                var li = $('<li/>', {text: message['message']});
                 $('#messages').append(li);
                 scrollToBottom();
             };
@@ -108,6 +115,7 @@
 
     <form id="chat-form">
         {{ form.csrf_token }}
+        <input type="hidden" id="campaign_id" name="campaign_id" value="{{ campaign.id }}"/>
         <label for="message">Message</label>
         <textarea id="message" name="message" class="u-full-width" placeholder="your message here..."></textarea>
         <input class="button-primary" type="submit" value="Send"/>

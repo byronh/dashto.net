@@ -3,9 +3,8 @@ import json
 import signal
 import aioredis
 import websockets
-from aioredis.commands.pubsub import PubSubCommandsMixin
-from aioredis.util import Channel
 from dashto.chat import errors
+from dashto.chat.channel import Channel
 from dashto.chat.client import Client
 
 
@@ -21,13 +20,15 @@ class ChatServer:
         self.pub = None
         self.sub = None
 
+        self.channels = {}
+
     def start(self):
         start_server = websockets.serve(self.client_handler, self.host, self.port, klass=Client)
 
         self.loop.add_signal_handler(signal.SIGINT, asyncio.async, self.on_kill())
         self.loop.add_signal_handler(signal.SIGTERM, asyncio.async, self.on_kill())
 
-        print('Chat server listening on {}:{}...'.format(self.host, self.port))
+        print('campaign server listening on {}:{}...'.format(self.host, self.port))
 
         self.loop.run_until_complete(self.connect_to_redis())
         self.loop.run_until_complete(start_server)
@@ -37,7 +38,7 @@ class ChatServer:
 
     @asyncio.coroutine
     def on_kill(self):
-        print('Chat server shutting down...')
+        print('campaign server shutting down...')
         self.loop.stop()
 
     @asyncio.coroutine
@@ -49,63 +50,63 @@ class ChatServer:
     @asyncio.coroutine
     def client_handler(self, client, path):
         client.redis = self.redis
+        campaign_id = None
         try:
-            yield from self.on_connect(client, path)
+            campaign_id = yield from self.connect_to_channel(client, path)
+            if campaign_id not in self.channels:
+                channel = Channel(self.redis, self.sub, 'campaign:{}'.format(campaign_id))
+                self.channels[campaign_id] = channel
+            else:
+                channel = self.channels[campaign_id]
+            yield from channel.add_client(client)
             while True:
                 data = yield from self.receive(client)
-                pub = self.pub
-                """ :type pub: PubSubCommandsMixin """
-                yield from pub.publish_json('chan:1', {'message': 'Pub/sub is working'})
-                yield from self.broadcast(client.user, data['message'])
+                yield from channel.publish_json(data)
         except errors.DisconnectError as e:
-            print('Disconnecting {}: {}'.format(client.user, e))
-        yield from self.on_disconnect(client)
+            print('user:{} -> {}'.format(client.user, e))
+        if campaign_id is not None:
+            yield from self.channels[campaign_id].remove_client(client)
+        self.clients.remove(client)
 
     @asyncio.coroutine
     def publish_handler(self):
-        res = yield from self.sub.subscribe('chan:1')
-        if len(res) != 1:
-            raise errors.FatalServerError('Failed to subscribe to channel')
-        channel = res[0]
-        """ :type channel: Channel """
-        print('Subscribed to {}'.format(channel.name.decode()))
         while True:
-            message = yield from channel.get_json()
-            print('Received JSON message from subscribed channel: {}'.format(message))
+            for channel_id, channel in self.channels.items():
+                # TODO yield from constructor in channel object so that this doesn't need to be checked
+                if not channel.channel:
+                    continue
+                data = yield from channel.get_json()
+                if not data:
+                    continue
+                yield from channel.broadcast(data)
+            yield from asyncio.sleep(0.01)
 
     @asyncio.coroutine
-    def on_connect(self, client, path):
+    def connect_to_channel(self, client, path):
         """ :type client: dashto.chat.client.Client """
         data = yield from self.receive(client)
+        if 'channel_id' not in data:
+            raise errors.NotAuthorizedError('missing channel specifier')
+        try:
+            channel_id = int(data['channel_id'])
+        except TypeError:
+            raise errors.NotAuthorizedError('invalid channel specifier')
         if 'cookie' not in data:
-            raise errors.NotAuthorizedError('Missing session cookie')
+            raise errors.NotAuthorizedError('missing session cookie')
         if 'csrf_token' not in data:
-            raise errors.NotAuthorizedError('Missing CSRF token')
+            raise errors.NotAuthorizedError('missing CSRF token')
         yield from client.authenticate(data['cookie'], data['csrf_token'], self.session_secret)
-        print('{} signed in to {}'.format(client.user, path))
         self.clients.append(client)
-
-    @asyncio.coroutine
-    def on_disconnect(self, client):
-        """ :type client: dashto.chat.client.Client """
-        self.clients.remove(client)
+        return channel_id
 
     @asyncio.coroutine
     def receive(self, client):
         """ :type client: dashto.chat.client.Client """
         json_data = yield from client.recv()
         if json_data is None:
-            raise errors.DisconnectError('Client closed connection')
-        print('Received {}'.format(json_data))
+            raise errors.DisconnectError('client closed connection')
         try:
             data = json.loads(json_data)
         except (ValueError, TypeError):
             return {}
         return data
-
-    @asyncio.coroutine
-    def broadcast(self, user, message):
-        # TODO send JSON to client
-        print('Broadcasting {}, {}'.format(user, message))
-        for client in self.clients:
-            yield from client.send('{}: {}'.format(user, message))

@@ -1,3 +1,4 @@
+import json
 from pyramid import httpexceptions
 from redis import StrictRedis
 
@@ -19,6 +20,9 @@ class BaseController:
         if 'csrf_token' in form.errors:
             raise httpexceptions.HTTPUnauthorized()
         return False
+
+    def publish(self, channel, json_data):
+        return self.redis.publish(channel, json.dumps(json_data))
 
     @property
     def params(self):
