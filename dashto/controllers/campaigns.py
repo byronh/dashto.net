@@ -48,7 +48,7 @@ class CampaignsController(BaseController):
         form = forms.ChatForm(**self.form_kwargs)
         return {'campaign': campaign, 'form': form}
 
-    @view_config(route_name='campaigns_request_join', renderer='campaigns/request_join.html')
+    @view_config(route_name='campaigns_request_join')
     def request_join(self):
         form = forms.CampaignRequestJoinForm(**self.form_kwargs)
         if not self.validate(form):
