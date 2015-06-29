@@ -1,9 +1,13 @@
 from pyramid_wtforms import SecureForm, validators
-from pyramid_wtforms import FileField, PasswordField, StringField, TextAreaField
+from pyramid_wtforms import FileField, IntegerField, PasswordField, StringField, TextAreaField
 
 
 class CampaignCreateForm(SecureForm):
     campaign_name = StringField('Name', [validators.Length(min=3, max=64)])
+
+
+class CampaignRequestJoinForm(SecureForm):
+    campaign_id = IntegerField([validators.required()])
 
 
 class CharacterCreateForm(SecureForm):

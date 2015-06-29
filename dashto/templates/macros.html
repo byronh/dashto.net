@@ -13,3 +13,13 @@
         {{ field(**kwargs) }}
     {% endif %}
 {% endmacro %}
+
+{% macro post_button(request, target, text) %}
+    <form action="{{ target }}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ request.session.get_csrf_token() }}"/>
+        {% for key, value in kwargs.items() %}
+            <input type="hidden" name="{{ key }}" value="{{ value }}"/>
+        {% endfor %}
+        <input class="button-primary" type="submit" value="{{ text }}"/>
+    </form>
+{% endmacro %}

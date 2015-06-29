@@ -34,6 +34,7 @@ def main(global_config, **settings):
     config.add_route('campaigns_create', '/campaigns/new')
     config.add_route('campaigns_view', '/campaigns/{campaign_id:\d+}')
     config.add_route('campaigns_play', '/campaigns/{campaign_id:\d+}/play')
+    config.add_route('campaigns_request_join', '/campaigns/{campaign_id:\d+}/join')
 
     config.add_route('characters_create', '/characters/new')
     config.add_route('characters_view', '/characters/{character_id:\d+}')

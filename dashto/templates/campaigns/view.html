@@ -8,7 +8,7 @@
     {% if memberships %}
     <h3>Members:</h3>
     <ul>
-        {% for membership in memberships %}
+        {% for membership in memberships if membership.is_member %}
         <li>
             <a href="{{ 'users_view'|route_url(user_id=membership.user_id) }}">{{ membership.user.name }}</a>
             {% if membership.is_gm %}(GM){% endif %}
@@ -17,9 +17,14 @@
     </ul>
     {% endif %}
 
-    {% if request.user.id in user_ids %}
+    {% if not membership %}
+        {{ macros.post_button(request, 'campaigns_request_join'|route_url(campaign_id=campaign.id),
+            'Request Membership', campaign_id=campaign.id) }}
+    {% elif membership.is_member %}
         <a href="{{ 'campaigns_play'|route_url(campaign_id=campaign.id) }}">
             <button type="button" class="button-primary">Play</button>
         </a>
+    {% else %}
+        <em>Your membership in this campagin is awaiting approval from a GM.</em>
     {% endif %}
 {% endblock %}

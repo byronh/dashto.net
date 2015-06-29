@@ -16,9 +16,16 @@ class CampaignsController(BaseController):
             raise httpexceptions.HTTPNotFound()
         return campaign
 
+    def get_membership(self, campaign):
+        """ :rtype: Membership """
+        query = DBSession.query(Membership).join(User).filter(Membership.campaign == campaign)
+        membership = query.filter(Membership.user == self.user).first()
+        return membership
+
     def get_memberships(self, campaign):
         query = DBSession.query(Membership).join(User).filter(Membership.campaign == campaign)
-        return query.options(contains_eager(Membership.user)).order_by(Membership.is_gm.desc(), User.name).all()
+        query = query.filter(Membership.status >= Membership.Status.member.value)
+        return query.options(contains_eager(Membership.user)).order_by(Membership.status.desc(), User.name).all()
 
     @view_config(route_name='campaigns_index', renderer='campaigns/index.html')
     def view_all(self):
@@ -29,18 +36,33 @@ class CampaignsController(BaseController):
     def view(self):
         campaign = self.get_campaign()
         memberships = self.get_memberships(campaign)
-        user_ids = [membership.user.id for membership in memberships]
-        return {'campaign': campaign, 'memberships': memberships, 'user_ids': user_ids}
+        membership = self.get_membership(campaign)
+        return {'campaign': campaign, 'memberships': memberships, 'membership': membership}
 
     @view_config(route_name='campaigns_play', renderer='campaigns/play.html')
     def play(self):
         campaign = self.get_campaign()
-        query = DBSession.query(Membership).join(User).filter(Membership.campaign == campaign)
-        membership = query.filter(Membership.user == self.user).first()
-        if not membership:
+        membership = self.get_membership(campaign)
+        if not membership or not membership.is_member:
             raise httpexceptions.HTTPForbidden()
         form = forms.ChatForm(**self.form_kwargs)
         return {'campaign': campaign, 'form': form}
+
+    @view_config(route_name='campaigns_request_join', renderer='campaigns/request_join.html')
+    def request_join(self):
+        form = forms.CampaignRequestJoinForm(**self.form_kwargs)
+        if not self.validate(form):
+            raise httpexceptions.HTTPBadRequest()
+        campaign = self.get_campaign()
+        membership = self.get_membership(campaign)
+        if membership:
+            raise httpexceptions.HTTPForbidden()
+        membership = Membership()
+        membership.user = self.user
+        membership.campaign = campaign
+        membership.status = Membership.Status.pending.value
+        DBSession.add(membership)
+        return self.redirect('campaigns_view', campaign_id=campaign.id)
 
     @view_config(route_name='campaigns_create', renderer='campaigns/new.html')
     def create(self):
@@ -52,7 +74,7 @@ class CampaignsController(BaseController):
             membership = Membership()
             membership.user = self.user
             membership.campaign = campaign
-            membership.is_gm = True
+            membership.status = Membership.Status.gm.value
 
             DBSession.add(campaign)
             DBSession.add(membership)
