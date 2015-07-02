@@ -18,6 +18,7 @@ pyramid-redis-sessions==1.0.1
 pyramid-storage==0.0.8
 pyramid-tm==0.12
 pyramid-wtforms==2.0.1
+python-logstash==0.4.5
 redis==2.10.3
 repoze.lru==0.6
 SQLAlchemy==1.0.4
