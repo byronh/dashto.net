@@ -16,6 +16,7 @@ requires = [
     'pyramid_storage',
     'pyramid_tm',
     'pyramid_wtforms',
+    'python-logstash',
     'sqlalchemy',
     'transaction',
     'waitress',
