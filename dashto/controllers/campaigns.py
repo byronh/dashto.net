@@ -47,7 +47,7 @@ class CampaignsController(BaseController):
         if not membership or not membership.is_member:
             raise httpexceptions.HTTPForbidden()
         form = forms.ChatForm(**self.form_kwargs)
-        return {'campaign': campaign, 'form': form}
+        return {'campaign': campaign, 'form': form, 'chat_target': self.config['chat.target']}
 
     @view_config(route_name='campaigns_request_join')
     def request_join(self):

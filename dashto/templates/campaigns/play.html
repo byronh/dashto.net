@@ -4,8 +4,8 @@
     {{ super() }}
     <script type="text/javascript">
         $(document).ready(function() {
-            var port = 5001;
-            var conn = new WebSocket('ws://' + document.domain + ':' + port);
+            var target = '{{ chat_target }}';
+            var conn = new WebSocket('ws://' + target);
             var message_input = $('#message');
 
             var scrollToBottom = function() {
@@ -17,25 +17,25 @@
 
             conn.onopen = function() {
                 var data = {
-                    'channel_id': $('#campaign_id').val(),
+                    'channel_id': {{ campaign.id }},
                     'cookie': document.cookie,
                     'csrf_token': $('#csrf_token').val()
                 };
                 conn.send(JSON.stringify(data));
 
-                var li = $('<li/>', {text: 'Connected to server at port ' + port, 'class': 'success'});
+                var li = $('<li/>', {text: 'Connected to server at ' + target, 'class': 'success'});
                 $('#messages').append(li);
                 scrollToBottom();
             };
 
             conn.onclose = function() {
-                var li = $('<li/>', {text: 'Server at port ' + port + ' stopped', 'class': 'error'});
+                var li = $('<li/>', {text: 'Server at ' + target + ' stopped', 'class': 'error'});
                 $('#messages').append(li);
                 scrollToBottom();
             };
 
             conn.onerror = function() {
-                var li = $('<li/>', {text: 'Failed to connect to server at port ' + port, 'class': 'error'});
+                var li = $('<li/>', {text: 'Failed to connect to server at ' + target, 'class': 'error'});
                 $('#messages').append(li);
                 scrollToBottom();
             };
@@ -115,7 +115,6 @@
 
     <form id="chat-form">
         {{ form.csrf_token }}
-        <input type="hidden" id="campaign_id" name="campaign_id" value="{{ campaign.id }}"/>
         <label for="message">Message</label>
         <textarea id="message" name="message" class="u-full-width" placeholder="your message here..."></textarea>
         <input class="button-primary" type="submit" value="Send"/>

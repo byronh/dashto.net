@@ -35,6 +35,10 @@ class BaseController:
         return self.request.session.redis
 
     @property
+    def config(self):
+        return self.request.registry.settings
+
+    @property
     def user(self):
         """ :rtype: User """
         return self.request.user
