@@ -10,7 +10,6 @@ class MainController(BaseController):
 
     @view_config(route_name='home', permission=Permissions.PUBLIC, renderer='index.html')
     def home(self):
-        raise Exception('Test exception')
         return {}
 
     @view_config(route_name='login', permission=Permissions.PUBLIC, renderer='login.html')
