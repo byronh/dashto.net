@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import signal
 import aioredis
 import websockets
@@ -10,6 +11,7 @@ from dashto.chat.client import Client
 
 class ChatServer:
     def __init__(self, listen_host, listen_port, redis_host, redis_port, session_secret):
+        self.logger = logging.getLogger(__name__)
         self.loop = asyncio.get_event_loop()
         self.host = listen_host
         self.port = listen_port
@@ -23,18 +25,21 @@ class ChatServer:
         self.channels = {}
 
     def start(self):
-        start_server = websockets.serve(self.client_handler, self.host, self.port, klass=Client)
+        try:
+            start_server = websockets.serve(self.client_handler, self.host, self.port, klass=Client)
 
-        self.loop.add_signal_handler(signal.SIGINT, asyncio.async, self.on_kill())
-        self.loop.add_signal_handler(signal.SIGTERM, asyncio.async, self.on_kill())
+            self.loop.add_signal_handler(signal.SIGINT, asyncio.async, self.on_kill())
+            self.loop.add_signal_handler(signal.SIGTERM, asyncio.async, self.on_kill())
 
-        print('campaign server listening on {}:{}...'.format(self.host, self.port))
+            print('campaign server listening on {}:{}...'.format(self.host, self.port))
 
-        self.loop.run_until_complete(self.connect_to_redis())
-        self.loop.run_until_complete(start_server)
-        self.loop.run_until_complete(self.publish_handler())
+            self.loop.run_until_complete(self.connect_to_redis())
+            self.loop.run_until_complete(start_server)
+            self.loop.run_until_complete(self.publish_handler())
 
-        self.loop.run_forever()
+            self.loop.run_forever()
+        except Exception as e:
+            self.logger.exception(e)
 
     @asyncio.coroutine
     def on_kill(self):
@@ -64,9 +69,10 @@ class ChatServer:
                 yield from channel.publish_json(data)
         except errors.DisconnectError as e:
             print('user:{} -> {}'.format(client.user, e))
-        if campaign_id is not None:
-            yield from self.channels[campaign_id].remove_client(client)
-        self.clients.remove(client)
+        finally:
+            if campaign_id is not None:
+                yield from self.channels[campaign_id].remove_client(client)
+            self.clients.remove(client)
 
     @asyncio.coroutine
     def publish_handler(self):

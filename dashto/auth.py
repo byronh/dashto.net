@@ -17,7 +17,6 @@ class UserAuthenticationPolicy:
         user = request.user
         if user:
             principals += [Authenticated, 'u:%s' % user.id]
-            # principals.extend(('g:%s' % g.name for g in user.groups))
         return principals
 
     @staticmethod

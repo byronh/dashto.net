@@ -20,7 +20,8 @@ class MainController(BaseController):
             user = query.filter(User.name == form.user_name.data).first()
             if user and user.validate_password(form.user_password.data):
                 self.request.session['user_id'] = user.id
-                return self.redirect('campaigns_index')
+                destination = self.params.get('from', 'campaigns_index')
+                return self.redirect(destination)
             else:
                 form.user_name.errors.append('Invalid credentials')
         return {'form': form}

@@ -2,7 +2,7 @@
 
 import argparse
 from dashto.chat.server import ChatServer
-from pyramid.paster import bootstrap
+from pyramid.paster import bootstrap, setup_logging
 
 
 if __name__ == '__main__':
@@ -11,6 +11,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     env = bootstrap(args.config)
+    setup_logging(args.config)
     settings = env['registry'].settings
 
     chat_server = ChatServer(
